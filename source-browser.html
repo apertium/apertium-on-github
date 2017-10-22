@@ -11,6 +11,10 @@
         margin-top: 1em;
         max-height: 4em;
       }
+      #github-logo {
+        margin-top: .5em;
+        max-height: 6em;
+      }
       #topics {
         margin-top: 1em;
         flex-wrap: wrap;
@@ -32,7 +36,12 @@
   </head>
   <body>
     <div class="container-fluid">
-      <img id="logo" src="//www.apertium.org/img/Apertium.png">
+      <a href="https://apertium.org" target="_blank">
+        <img id="logo" src="//www.apertium.org/img/Apertium.png">
+      </a>
+      <a href="#" target="_blank" id="github-link">
+        <img id="github-logo" class="d-none d-sm-block float-right" src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png">
+      </a>
       <div id="topics" class="d-flex"></div>
     </div>
 
@@ -124,6 +133,7 @@
       }
 
       $(document).ready(() =>  {
+        $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
         showTopics();
         $('#topics').on('click', '.repo-info', showRepoInfo);
       });

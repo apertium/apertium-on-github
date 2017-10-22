@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Apertium Source Browser</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <style type="text/css">
+      #logo {
+        margin-top: 1em;
+        max-height: 4em;
+      }
+      #topics {
+        margin-top: 1em;
+        flex-wrap: wrap;
+      }
+      .topic {
+        flex: 1;
+        min-width: 200px;
+      }
+      .repo i {
+        margin-left: 5px;
+      }
+      .repo-info {
+        cursor: pointer;
+      }
+      .repo-info-term {
+        text-transform: capitalize;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <img id="logo" src="//www.apertium.org/img/Apertium.png">
+      <div id="topics" class="d-flex"></div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="repo-info-modal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body"><dl></dl></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="//code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      const ORGANIZATION = 'mock-apertium',
+            TOPICS = ['languages', 'incubator', 'trunk', 'tools'];
+
+      function getTopicData(topic, organization) {
+        const url = `//api.github.com/search/repositories?q=topic:${topic}+org:${ORGANIZATION}+fork:true`;
+        if (localStorage[url]) {
+          return Promise.resolve(JSON.parse(localStorage[url]));
+        } else {
+          return new Promise((resolve, reject) => {
+            fetch(url)
+              .then(data =>
+                data.json()
+                  .then(repos => {
+                    localStorage[url] = JSON.stringify(repos);
+                    resolve(repos);
+                  })
+                  .catch(err => reject(err))
+                )
+              .catch(err => reject(err))
+          });
+        }
+      }
+
+      function showTopics() {
+        TOPICS.forEach(topic => {
+          const topicColumn = $('<div class="topic">'),
+                repoList = $('<ul class="repos list-unstyled">');
+          topicColumn.append(
+            $('<h2>').text(topic),
+            repoList,
+          );
+          $("#topics").append(topicColumn);
+
+          getTopicData(topic, ORGANIZATION).then(repos => {
+            repos.items.sort((a, b) => a.name.localeCompare(b.name));
+            repos.items.forEach(repo =>
+              repoList.append(
+                $('<li class="repo">').append(
+                  $('<a>').text(repo.name).attr({
+                    href: repo.html_url,
+                    target: '_blank',
+                  }),
+                  $('<i class="fa fa-question-circle" data-toggle="tooltip">').attr('title', repo.description),
+                  $('<i class="fa fa-info-circle repo-info">').data('repo', repo),
+                )
+              )
+            );
+            $('[data-toggle="tooltip"]', topicColumn).tooltip();
+          });
+        });
+      }
+
+      function showRepoInfo(event) {
+        const repo = $(event.currentTarget).data('repo');
+        $('#repo-info-modal').modal('show');
+        $('#repo-info-modal .modal-title').text(repo.full_name);
+        $('#repo-info-modal .modal-body dl').empty().append(
+          Array.prototype.concat.apply(
+            [],
+            ['description', 'language', 'stargazers_count', 'watchers_count', 'git_url', 'updated_at', 'created_at', 'pushed_at'].map(
+              key => [$('<dt class="repo-info-term">').text(key.replace('_', ' ')), $('<dd>').text(repo[key])],
+            ),
+          )
+        );
+      }
+
+      $(document).ready(() =>  {
+        showTopics();
+        $('#topics').on('click', '.repo-info', showRepoInfo);
+      });
+    </script>
+  </body>
+</html>

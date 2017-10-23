@@ -34,6 +34,13 @@
       .repo-info-term {
         text-transform: capitalize;
       }
+      .topic-repo-link {
+        margin-left: .5em;
+      }
+      .topic-divider {
+        width: 90%;
+        margin: .5rem 0;
+      }
     </style>
   </head>
   <body>
@@ -69,7 +76,12 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
     <script type="text/javascript">
       const ORGANIZATION = 'mock-apertium',
-            TOPICS = ['languages', 'incubator', 'trunk', 'tools'];
+            TOPICS = [
+              {topic: 'languages'},
+              {topic: 'incubator'},
+              {topic: 'trunk'},
+              {topic: 'tools', repo_url: 'https://github.com/mock-apertium/tools'},
+            ];
 
       function getTopicData(topic, organization) {
         const url = `//api.github.com/search/repositories?q=topic:${topic}+org:${ORGANIZATION}+fork:true`;
@@ -92,11 +104,18 @@
       }
 
       function showTopics() {
-        TOPICS.forEach(topic => {
+        TOPICS.forEach(({topic, repo_url}) => {
           const topicColumn = $('<div class="topic">'),
                 repoList = $('<ul class="repos list-unstyled">');
           topicColumn.append(
-            $('<h2>').text(topic),
+            $('<div>').append(
+              $('<h2 class="d-inline">').text(topic),
+              repo_url ? $('<a class="topic-repo-link"><i class="fa fa-external-link"></i></a>').attr({
+                href: repo_url,
+                target: '_blank',
+              }) : undefined
+            ),
+            $('<hr class="topic-divider">'),
             repoList,
           );
           $("#topics").append(topicColumn);
@@ -110,8 +129,9 @@
                     href: repo.html_url,
                     target: '_blank',
                   }),
-                  $('<i class="fa fa-question-circle" data-toggle="tooltip">').attr('title', repo.description),
-                  $('<i class="fa fa-info-circle repo-info">').data('repo', repo),
+                  $('<i class="fa fa-info-circle repo-info" data-toggle="tooltip">')
+                    .attr('title', repo.description)
+                    .data('repo', repo),
                 )
               )
             );

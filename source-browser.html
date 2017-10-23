@@ -25,6 +25,9 @@
         flex: 1;
         min-width: 200px;
       }
+      .repo {
+        font-family: SFMono-Regular, Menlo, Monaco ,Consolas, "Liberation Mono", "Courier New", monospace;
+      }
       .repo i {
         margin-left: 5px;
       }
@@ -52,6 +55,9 @@
         <img id="github-logo" class="d-none d-sm-block float-right" src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png">
       </a>
       <div id="topics" class="d-flex"></div>
+      <button type="button" class="btn btn-outline-secondary btn-sm text-center" id="refresh">
+        <i class="fa fa-refresh"></i>
+      </button>
     </div>
 
     <div class="modal fade" tabindex="-1" role="dialog" id="repo-info-modal">
@@ -77,7 +83,7 @@
     <script type="text/javascript">
       const ORGANIZATION = 'mock-apertium',
             TOPICS = [
-              {topic: 'languages'},
+              {topic: 'languages', repoUrl: 'https://github.com/mock-apertium/languages'},
               {topic: 'incubator'},
               {topic: 'trunk'},
               {topic: 'tools', repoUrl: 'https://github.com/mock-apertium/tools'},
@@ -154,10 +160,18 @@
         );
       }
 
+      function refreshTopics(event) {
+        localStorage.clear();
+        $('.topic').remove();
+        event.currentTarget.blur();
+        showTopics();
+      }
+
       $(document).ready(() =>  {
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
-        showTopics();
         $('#topics').on('click', '.repo-info', showRepoInfo);
+        $('#refresh').click(refreshTopics);
+        showTopics();
       });
     </script>
   </body>

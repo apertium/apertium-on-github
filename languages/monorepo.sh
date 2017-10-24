@@ -9,11 +9,11 @@ cd $MONOREPO/
 languages=( $(svn ls https://svn.code.sf.net/p/apertium/svn/languages | grep / | cut -d '/' -f 1) )
 for lang in "${languages[@]}"
 do
-    git submodule add git@github.com:$ORG/$lang.git
+    git submodule add -b master git@github.com:$ORG/$lang.git
 done
 wget https://svn.code.sf.net/p/apertium/svn/languages/001-README -O README.md
-git add .
-git commit -m "Update submodules"
+git commit -a -m "Update submodules"
 git push
 
 cd ..
+rm -rf $MONOREPO/

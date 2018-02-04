@@ -180,7 +180,7 @@ def sync_metarepo(clone_dir, name, submodules):
     if not clean:
         logging.info('Pushing changes to meta repository %s', name)
         commit_message = textwrap.dedent('''
-            Update submodules
+            Sync submodules
             Updated: {}.
             Deleted: {}.
             Added: {}.
@@ -244,12 +244,12 @@ def main():
     parser.add_argument(
         'action',
         choices={'startserver', 'sync'},
-        help='Use "startserver" to start the server and "sync --repo [name]" to force an sync',
+        help='use "startserver" to start the server and "sync --repo [name]" to force an sync',
     )
-    parser.add_argument('--verbose', '-v', action='count', help='Adjust verbosity', default=0)
-    parser.add_argument('--dir', '-d', help='Directory to clone meta repos', default=DEFAULT_CLONE_DIR)
-    parser.add_argument('--repo', '-r', help='Repository to sync (required with sync action)')
-    parser.add_argument('--port', '-p', type=int, default=DEFAULT_PORT)
+    parser.add_argument('--verbose', '-v', action='count', help='adjust verbosity', default=0)
+    parser.add_argument('--dir', '-d', help='directory to clone meta repos', default=DEFAULT_CLONE_DIR)
+    parser.add_argument('--repo', '-r', help='repository to sync (required with sync action)')
+    parser.add_argument('--port', '-p', type=int, help='server port (default: {})'.format(DEFAULT_PORT), default=DEFAULT_PORT)
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
     args = parser.parse_args()
 

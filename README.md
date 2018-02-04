@@ -31,12 +31,35 @@ Transition
 Maintenance
 -----------
 
-- The The TODO script recieves events from GitHub web hooks.
+- The `sync.py` recieves events from GitHub web hooks.
 - Any updates to repositories with the appropriate tags will be pushed to the appropriate meta-repository.
-- New repositories with a valid topic will be added to the  meta-repository.
+- New repositories with a valid topic will be added to the appropriate meta-repository.
 - Deleted repositories with a valid topic will be deleted from the appropriate meta-repository.
 
-TODO: maybe the script should just nuke and restart each time? could get pretty tricky...
+Usage:
+
+    usage: sync.py [-h] [--verbose] [--dir DIR] [--repo REPO] [--port PORT]
+                [--token TOKEN]
+                {sync,startserver}
+
+    Sync Apertium meta repositories.
+
+    positional arguments:
+    {sync,startserver}    use "startserver" to start the server and "sync --repo
+                            [name]" to force an sync
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --verbose, -v         adjust verbosity
+    --dir DIR, -d DIR     directory to clone meta repos
+    --repo REPO, -r REPO  repository to sync (required with sync action)
+    --port PORT, -p PORT  server port (default: 9712)
+    --token TOKEN, -t TOKEN
+                            GitHub OAuth token
+
+The GitHub OAuth token can also be set by exporting `GITHUB_OAUTH_TOKEN`:
+
+    export GITHUB_OAUTH_TOKEN=XXX
 
 Interface
 ---------

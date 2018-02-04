@@ -7,6 +7,7 @@ See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_pr
 
 Structure
 ---------
+
 - Each package will have its own repository.
 - "Meta repositories" will contain only submodules.
     - `apertium-all` will contain `apertium-core`, `apertium-tools`, `apertium-staging`, `apertium-incubator`, `apertium-nursery`, `apertium-trunk`.
@@ -23,13 +24,15 @@ Structure
 
 Transition
 ----------
+
 - TODO: import document and finish scripts
 - TODO: svn propset script
 - TODO: org setup (including pinning)
 
 Maintenance
 -----------
-- The TODO script recieves events from GitHub web hooks.
+
+- The The TODO script recieves events from GitHub web hooks.
 - Any updates to repositories with the appropriate tags will be pushed to the appropriate meta-repository.
 - New repositories with a valid topic will be added to the  meta-repository.
 - Deleted repositories with a valid topic will be deleted from the appropriate meta-repository.
@@ -38,13 +41,14 @@ TODO: maybe the script should just nuke and restart each time? could get pretty 
 
 Interface
 ---------
+
 - TODO: document and finish web interface
 - TODO: mention repo pinning
 
 
-
 Helpful Git Commands
 --------------------
+
 - Remember, [`git svn`](https://git-scm.com/book/en/v1/Git-and-Other-Systems-Git-and-Subversion) is always an option and offers an bona fide SVN experience.
 - Kernel.org's [Git for SVN users cheatsheet](https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf).
 - TODO: submodule commands

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ORG='mock-apertium'
-MONOREPO='staging'
+MONOREPO='apertium-staging'
 
 git clone git@github.com:$ORG/$MONOREPO.git
 cd $MONOREPO/

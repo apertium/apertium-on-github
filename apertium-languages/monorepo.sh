@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ORG='mock-apertium'
-MONOREPO='languages'
+MONOREPO='apertium-languages'
 
 git clone git@github.com:$ORG/$MONOREPO.git
 cd $MONOREPO/

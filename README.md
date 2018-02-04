@@ -11,7 +11,6 @@ Structure
 - Each package will have its own repository.
 - "Meta repositories" will contain only submodules.
     - `apertium-all` will contain `apertium-core`, `apertium-tools`, `apertium-staging`, `apertium-incubator`, `apertium-nursery`, `apertium-trunk`.
-    - `apertium-core` will contain the core.
     - `apertium-tools` will contain tools (repos marked with topic `tools`).
     - `apertium-staging` will contain staging language pairs (repos marked with topic `staging`).
     - `apertium-nursery` will contain nursery language pairs (repos marked with topic `nursery`).

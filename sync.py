@@ -19,8 +19,10 @@ import socketserver
 import sys
 
 DEFAULT_PORT = 9712
+# repo name => topics
 REPOS = {
-    'apertium-languages'
+    'apertium-languages': {'languages'},
+    'apertium-staging': {'staging'}
 }
 
 httpd = None
@@ -28,7 +30,6 @@ httpd = None
 
 def close_socket():
     global httpd
-
     if httpd:
         logging.info('Stopping server')
         httpd.server_close()
@@ -73,7 +74,6 @@ class PortReuseTCPServer(socketserver.TCPServer):
 
 def start_server(port):
     global httpd
-
     httpd = PortReuseTCPServer(('', port), RequestHandler)
     logging.info('Starting server on port %d', port)
     httpd.serve_forever()

@@ -135,15 +135,65 @@ def group_repos_by_topic(repos):
     return groups
 
 
-def update_metarepo(clone_dir, name, submodules):
+def sync_metarepo(clone_dir, name, submodules):
+    # Clone
+    logging.info('Updating meta repository %s with %d submodules', name, len(submodules))
     if not os.path.isdir(os.path.join(clone_dir, name)):
         logging.info('Cloning meta repository %s', name)
         args = shlex.split('git clone --recursive -j8 git@github.com:{}/{}.git'.format(ORGANIZATION, name))
         subprocess.check_call(args, cwd=clone_dir)
     else:
         logging.debug('Meta repository %s already cloned', name)
-    subprocess.check_call(args)
-    print(clone_dir, name, submodules)
+
+    # Update
+    logging.info('Updating meta repository %s', name)
+    metarepo_dir = os.path.join(clone_dir, name)
+    subprocess.check_call(shlex.split('git pull --ff-only'), cwd=metarepo_dir)
+    subprocess.check_call(shlex.split('git submodule update --recursive --remote'), cwd=metarepo_dir)
+    changeset = subprocess.check_output(shlex.split('git diff --name-only'), cwd=metarepo_dir, universal_newlines=True).splitlines()
+    logging.debug('Changeset is %s', changeset)
+    submodule_changeset = list(filter(lambda change: change in submodules, changeset))
+    logging.debug('Submodule changeset is %s', submodule_changeset)
+    logging.info('Meta repository %s saw %d updated submodules', name, len(submodule_changeset))
+
+    # Add / Remove Submodules
+    args = shlex.split('git config --file .gitmodules --name-only --get-regexp path')
+    submodule_list_output = subprocess.check_output(args, cwd=metarepo_dir, universal_newlines=True)
+    submodules_present = set(map(lambda line: line.split('.')[1], submodule_list_output.splitlines()))
+    submodules_missing = submodules - submodules_present
+    submodules_extra = submodules_present - submodules
+    logging.info('Meta repository %s has extra submodules %s and missing submodules %s', name, submodules_extra, submodules_missing)
+
+    for submodule in submodules_extra:
+        logging.debug('Removing submodule %s from meta repository %s', submodule, name)
+        subprocess.check_call(shlex.split('git submodule deinit -f {}'.format(submodule), cwd=metarepo_dir))
+        subprocess.check_call(shlex.split('rm -rf .git/modules/{}'.format(submodule), cwd=metarepo_dir))
+        subprocess.check_call(shlex.split('git rm -f {}'.format(submodule), cwd=metarepo_dir))
+
+    for submodule in submodules_missing:
+        logging.debug('Adding submodule %s to meta repository %s', submodule, name)
+        args = shlex.split('git submodule add -b master git@github.com:{}/{}.git'.format(ORGANIZATION, submodule))
+        subprocess.check_call(args, cwd=metarepo_dir)
+
+    # Commit and Push
+    clean = subprocess.call(shlex.split('git diff-index --quiet HEAD --'), cwd=metarepo_dir) == 0
+    if not clean:
+        logging.info('Pushing changes to meta repository %s', name)
+        commit_message = textwrap.dedent('''
+            Update submodules
+            Updated: {}.
+            Deleted: {}.
+            Added: {}.
+        '''.format(
+            ', '.join(submodule_changeset) or 'None',
+            ', '.join(submodules_extra) or 'None',
+            ', '.join(submodules_missing) or 'None',
+        ))
+        logging.debug('Meta repository %s commit message: %s', name, commit_message)
+        subprocess.check_call(shlex.split('git commit -a -m "{}"'.format(commit_message)), cwd=metarepo_dir)
+        subprocess.check_call(shlex.split('git push'), cwd=metarepo_dir)
+    else:
+        logging.info('Meta repository %s requires no changes', name)
 
 
 def handle_event(args, payload):
@@ -151,7 +201,7 @@ def handle_event(args, payload):
     repos_by_topic = group_repos_by_topic(repos)
     for name, topics in REPOS.items():
         submodules = functools.reduce(operator.or_, map(lambda topic: set(repos_by_topic[topic]), topics))
-        update_metarepo(args.dir, name, submodules)
+        sync_metarepo(args.dir, name, submodules)
 
 
 class RequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -193,12 +243,12 @@ def main():
     parser = argparse.ArgumentParser(description='Sync Apertium meta repositories.')
     parser.add_argument(
         'action',
-        choices={'startserver', 'update'},
-        help='Use "startserver" to start the server and "update --repo [name]" to force an update',
+        choices={'startserver', 'sync'},
+        help='Use "startserver" to start the server and "sync --repo [name]" to force an sync',
     )
     parser.add_argument('--verbose', '-v', action='count', help='Adjust verbosity', default=0)
     parser.add_argument('--dir', '-d', help='Directory to clone meta repos', default=DEFAULT_CLONE_DIR)
-    parser.add_argument('--repo', '-r', help='Repository to update (required with update action)')
+    parser.add_argument('--repo', '-r', help='Repository to sync (required with sync action)')
     parser.add_argument('--port', '-p', type=int, default=DEFAULT_PORT)
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
     args = parser.parse_args()
@@ -211,15 +261,16 @@ def main():
 
     os.makedirs(args.dir, exist_ok=True)
 
-    update_metarepo(args.dir, 'apertium-staging', [])
-    return
-
     if args.action == 'startserver':
         start_server(args)
-    elif args.action == 'update':
+    elif args.action == 'sync':
         if not args.repo:
-            raise argparse.ArgumentError('--repo required with update action')
-        update_metarepo(args, args.repo)
+            raise argparse.ArgumentError('--repo required with sync action')
+        repos = list_repos(args.token)
+        repos_by_topic = group_repos_by_topic(repos)
+        topics = REPOS[args.repo]
+        submodules = functools.reduce(operator.or_, map(lambda topic: set(repos_by_topic[topic]), topics))
+        sync_metarepo(args.dir, args.repo, submodules)
 
 
 if __name__ == '__main__':

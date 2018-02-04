@@ -10,13 +10,13 @@ Structure
 
 - Each package will have its own repository.
 - "Meta repositories" will contain only submodules.
-    - `apertium-all` will contain `apertium-core`, `apertium-tools`, `apertium-staging`, `apertium-incubator`, `apertium-nursery`, `apertium-trunk`.
-    - `apertium-tools` will contain tools (repos marked with topic `tools`).
-    - `apertium-staging` will contain staging language pairs (repos marked with topic `staging`).
-    - `apertium-nursery` will contain nursery language pairs (repos marked with topic `nursery`).
-    - `apertium-incubator` will contain staging language modules/pairs (repos marked with topic `incubator`).
-    - `apertium-trunk` will contain trunk language modules/pairs(repos marked with topic `trunk`).
-- Meta repositories will be kept up-to-date by scripts (described below).
+  - `apertium-all` will contain repos with topics `apertium-core`, `apertium-tools`, `apertium-staging`, `apertium-incubator`, `apertium-nursery`, `apertium-trunk`.
+  - `apertium-tools` will contain tools (repos with topic `apertium-tools`).
+  - `apertium-staging` will contain staging language pairs (repos with topic `apertium-staging`).
+  - `apertium-nursery` will contain nursery language pairs (repos with topic `apertium-nursery`).
+  - `apertium-incubator` will contain staging language modules/pairs (repos with topic `apertium-incubator`).
+  - `apertium-trunk` will contain trunk language modules/pairs(repos with topic `apertium-trunk`).
+- Meta repositories will be kept up-to-date by `sync.py` (described below).
 - SVN external properties will be used to maintain some backwards compatability.
 
 **N.B.** The topics (a.k.a. tags) are integral.

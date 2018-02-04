@@ -26,7 +26,7 @@ do
     git push origin --force --all
     curl -s -S -X PUT https://api.github.com/repos/$ORG/$lang/topics \
         -u $USER:$GITHUB_OAUTH_TOKEN \
-        -d '{"names":["staging"]}' \
+        -d '{"names":["apertium-staging"]}' \
         -H "Accept:application/vnd.github.mercy-preview+json"
 
     # clean up

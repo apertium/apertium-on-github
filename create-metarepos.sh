@@ -2,12 +2,12 @@
 source util.sh
 
 # setup the remainder
-METAREPOS=(apertium-staging apertium-nursery apertium-incubator apertium-trunk apertium-languages)
-for repo in "${METAREPOS[@]}"
+metarepos=(staging nursery incubator trunk languages tools)
+for repo in "${metarepos[@]}"
 do
-    create_repo $repo
-    set_repo_topics $repo '["apertium-all"]'
-    ./sync.py sync --repo $repo
+    create_repo "apertium-$repo"
+    set_repo_topics "apertium-$repo" '["apertium-all"]'
+    ./sync.py sync --repo "apertium-$repo"
 done
 
 # setup apertium-all

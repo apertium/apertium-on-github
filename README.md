@@ -3,6 +3,7 @@ Apertium on Github
 
 Proposal
 --------
+
 See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_proposals/Move_Apertium_to_Github).
 
 Structure
@@ -26,7 +27,7 @@ Transition
 
 - TODO: import document and finish scripts
 - TODO: svn propset script
-- TODO: org setup (including pinning)
+- TODO: org setup (including pinning and locking metarepos?)
 
 Maintenance
 -----------
@@ -64,13 +65,19 @@ The GitHub OAuth token can also be set by exporting `GITHUB_OAUTH_TOKEN`:
 Interface
 ---------
 
-- TODO: document and finish web interface
-- TODO: mention repo pinning
+We provide a wrapper on top of GitHub's organization view since it only supports
+pinning up to six repositories, searching is cumbersome and there are no custom
+layout options.
 
+The source for this interface is `source-browser.html`. For the sake of simplicity,
+only modern browsers are supported. It is made available via
+[GH pages](https://sushain97.github.io/apertium-on-github/source-browser.html).
 
 Helpful Git Commands
 --------------------
 
 - Remember, [`git svn`](https://git-scm.com/book/en/v1/Git-and-Other-Systems-Git-and-Subversion) is always an option and offers an bona fide SVN experience.
 - Kernel.org's [Git for SVN users cheatsheet](https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf).
-- TODO: submodule commands
+- Meta repository commands
+  - To checkout a meta repository, use `git clone --recursive -j8 [url]`.
+  - To pull (update) a meta repository, use `git pull --recurse-submodules`. Never use `git submodule update`, you will get conflicts.

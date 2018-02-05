@@ -38,3 +38,11 @@ push_bare_repo () {
         git push origin --force --all
     )
 }
+
+import_create_and_push_repo () {
+    import_repo $1 $2
+    create_repo $2
+    push_bare_repo $2
+    set_repo_topics $2 $3
+    rm -rf $2.git/
+}

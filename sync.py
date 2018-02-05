@@ -84,8 +84,8 @@ def _list_repos(token, after=None):
     request_data = json.dumps({
         'query': textwrap.dedent('''
           {
-            organization(login: {}) {
-              repositories(first: 100{}) {
+            organization(login: "%s") {
+              repositories(first: 100%s) {
                 edges {
                   node {
                     name
@@ -104,7 +104,7 @@ def _list_repos(token, after=None):
                 }
               }
             }
-          }''').format(ORGANIZATION, (', after: "{}"'.format(after) if after else ''))
+          }''') % (ORGANIZATION, (', after: "{}"'.format(after) if after else ''))
     }).encode("utf-8")
     request = urllib.request.Request(GITHUB_API, data=request_data, headers=headers)
     response = urllib.request.urlopen(request).read()
@@ -141,8 +141,9 @@ def sync_metarepo(clone_dir, name, submodules):
     logging.info('Updating meta repository %s with %d submodules', name, len(submodules))
     if not os.path.isdir(os.path.join(clone_dir, name)):
         logging.info('Cloning meta repository %s', name)
-        args = shlex.split('git clone --recursive -j8 git@github.com:{}/{}.git'.format(ORGANIZATION, name))
-        subprocess.check_call(args, cwd=clone_dir)
+        subprocess.check_call(
+            shlex.split('git clone --recursive -j8 git@github.com:{}/{}.git'.format(ORGANIZATION, name)),
+            cwd=clone_dir)
     else:
         logging.debug('Meta repository %s already cloned', name)
 

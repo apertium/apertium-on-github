@@ -54,7 +54,7 @@ automatically via the [`sync.py script][5].
 Maintenance
 -----------
 
-- The `sync.py` recieves events from GitHub web hooks.
+- The [`sync.py script][5] recieves events from GitHub web hooks.
 - Any updates to repositories with the appropriate tags will be pushed to the appropriate meta-repository.
 - New repositories with a valid topic will be added to the appropriate meta-repository.
 - Deleted repositories with a valid topic will be deleted from the appropriate meta-repository.

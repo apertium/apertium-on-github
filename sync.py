@@ -159,7 +159,11 @@ def sync_metarepo(clone_dir, name, submodules):
     logging.info('Meta repository %s saw %d updated submodules', name, len(submodule_changeset))
 
     # Add / Remove Submodules
-    submodule_list_output = metarepo_check_call(shlex.split('git config --file .gitmodules --name-only --get-regexp path'), universal_newlines=True)
+    submodule_list_output = subprocess.check_output(
+        shlex.split('git config --file .gitmodules --name-only --get-regexp path'),
+        cwd=metarepo_dir,
+        universal_newlines=True,
+    )
     submodules_present = set(map(lambda line: line.split('.')[1], submodule_list_output.splitlines()))
     submodules_missing = submodules - submodules_present
     submodules_extra = submodules_present - submodules
@@ -224,7 +228,6 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             logging.error('Error while handling payload %s', error, exc_info=True)
             self.send_response(500)
         finally:
-            self.send_header('Content-type', 'text/plain')
             self.end_headers()
 
 
@@ -262,7 +265,7 @@ def main():
     levels = [logging.WARNING, logging.INFO, logging.DEBUG]
     logging.basicConfig(
         format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-        level=levels[min(len(levels) - 1, args.verbose)]
+        level=levels[min(len(levels) - 1, args.verbose)],
     )
 
     os.makedirs(args.dir, exist_ok=True)

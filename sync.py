@@ -103,7 +103,8 @@ def _list_repos(token, after=None):
                   hasNextPage
                 }
               }
-            }''').format(ORGANIZATION, (', after: "{}"'.format(after) if after else ''))
+            }
+          }''').format(ORGANIZATION, (', after: "{}"'.format(after) if after else ''))
     }).encode("utf-8")
     request = urllib.request.Request(GITHUB_API, data=request_data, headers=headers)
     response = urllib.request.urlopen(request).read()

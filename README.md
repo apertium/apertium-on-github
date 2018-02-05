@@ -48,13 +48,13 @@ the list of repositories when a user lands on the organization page.
 
 Note that nobody should have write permissions for these meta-repositories,
 except owners of course. Their contents will, for the most part, be updated
-automatically via the [`sync.py script][5].
+automatically via [`sync.py`][5].
 
 
 Maintenance
 -----------
 
-- The [`sync.py script][5] recieves events from GitHub web hooks.
+- [`sync.py`][5] recieves events from GitHub web hooks.
 - Any updates to repositories with the appropriate tags will be pushed to the appropriate meta-repository.
 - New repositories with a valid topic will be added to the appropriate meta-repository.
 - Deleted repositories with a valid topic will be deleted from the appropriate meta-repository.

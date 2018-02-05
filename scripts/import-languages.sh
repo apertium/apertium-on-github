@@ -8,12 +8,7 @@ do
     # rm -rf $lang.git/
     # delete $lang
 
-    # do the import
-    ../subgit-3.2.6/bin/subgit configure \
-        --layout directory \
-        --svn-url https://svn.code.sf.net/p/apertium/svn/languages/$lang/
-    cp ../authors.txt $lang.git/subgit/authors.txt
-    ../subgit-3.2.6/bin/subgit install $lang.git
+    import_repo "https://svn.code.sf.net/p/apertium/svn/languages/$lang/" $lang
 
     # setup the new repo
     create_repo $lang

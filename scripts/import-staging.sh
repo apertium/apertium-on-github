@@ -1,30 +1,23 @@
 #!/bin/sh
+source "${BASH_SOURCE[0]%/*}/util.sh"
 
-ORG='mock-apertium'
-USER='sushain97'
-
-languages=( $(svn ls https://svn.code.sf.net/p/apertium/svn/staging | grep / | cut -d '/' -f 1) )
-for lang in "${languages[@]}"
+pairs=( $(svn ls https://svn.code.sf.net/p/apertium/svn/staging | grep / | cut -d '/' -f 1) )
+for pair in "${pairs[@]}"
 do
     # delete existing stuff
-    # rm -rf $lang.git/
-    # delete $lang
+    # rm -rf $pair.git/
+    # delete $pair
 
-    # do the import
-    ../subgit-3.2.6/bin/subgit configure \
-        --layout directory \
-        --svn-url https://svn.code.sf.net/p/apertium/svn/staging/$lang/
-    cp ../authors.txt $lang.git/subgit/authors.txt
-    ../subgit-3.2.6/bin/subgit install $lang.git
+    import_repo "https://svn.code.sf.net/p/apertium/svn/staging/$pair/" $pair
 
     # setup the new repo
-    create_repo $lang
-    cd $lang.git/
-    git remote add origin git@github.com:$ORG/$lang.git
+    create_repo $pair
+    cd $pair.git/
+    git remote add origin git@github.com:$ORG/$pair.git
     git push origin --force --all
-    set_repo_topics $lang '["apertium-staging"]'
+    set_repo_topics $pair '["apertium-staging"]'
 
     # clean up
     cd ..
-    rm -rf $lang.git/
+    rm -rf $pair.git/
 done

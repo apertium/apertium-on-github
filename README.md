@@ -30,18 +30,16 @@ Transition
 
 When created, all package repositories (pairs/languages/tools) will belong to
 the [apertium GitHub organization][2]. Members of the PMC will be 'owners' of
-this organization and all other Apertium contributors will be 'members'. Their
-permissions regarding the organization are given [here][1].
+this organization and all other Apertium contributors will be 'members', with
+[these permissions][1].
 
-Each repository will have the following permission levels:
+Each repository will have the following [permission levels][3]:
 - 'owner': (same for all packages) PMC members
 - 'admin': (package-specific) one or more 'package maintainers' who will merge
            pull requests, change continuous integration settings, etc.
 - 'write': (package-specific) Apertium contributors who have been given commit
            access
 - 'read': (same for all packages) any GitHub user
-
-(More information about repository permission levels is given [here][3].)
 
 The meta-repositories `apertium-all`, `apertium-tools`, `apertium-staging`,
 `apertium-nursery`, `apertium-incubator`, and `apertium-trunk` should be
@@ -50,7 +48,7 @@ the list of repositories when a user lands on the organization page.
 
 Note that nobody should have write permissions for these meta-repositories,
 except owners of course. Their contents will, for the most part, be updated
-automatically via the [`sync.py`][5] script.
+automatically via the [`sync.py script][5].
 
 
 Maintenance

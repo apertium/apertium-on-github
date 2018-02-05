@@ -38,12 +38,7 @@ ORGANIZATION = 'mock-apertium'
 REPOS = {
     'apertium-all': {
         'apertium-core',
-        'apertium-incubator',
-        'apertium-languages',
-        'apertium-nursery',
-        'apertium-staging',
-        'apertium-tools',
-        'apertium-trunk',
+        'apertium-all',
     },
     'apertium-incubator': {'apertium-incubator'},
     'apertium-languages': {'apertium-languages'},

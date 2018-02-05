@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Sushain K. Cherivirala">
     <link rel="shortcut icon" href="https://www.apertium.org/img/favicon.ico">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
@@ -84,9 +85,10 @@
       const ORGANIZATION = 'mock-apertium',
             TOPICS = [
               {topic: 'apertium-languages', repoUrl: 'https://github.com/mock-apertium/apertium-languages'},
-              {topic: 'apertium-staging', repoUrl: 'https://github.com/mock-apertium/apertium-staging'},
-              {topic: 'apertium-incubator'},
               {topic: 'apertium-trunk'},
+              {topic: 'apertium-staging', repoUrl: 'https://github.com/mock-apertium/apertium-staging'},
+              {topic: 'apertium-nursery'},
+              {topic: 'apertium-incubator'},
               {topic: 'apertium-tools', repoUrl: 'https://github.com/mock-apertium/apertium-tools'},
             ];
 
@@ -116,7 +118,7 @@
                 repoList = $('<ul class="repos list-unstyled">');
           topicColumn.append(
             $('<div>').append(
-              $('<h2 class="d-inline">').text(topic),
+              $('<h3 class="d-inline">').text(topic),
               repoUrl ? $('<a class="topic-repo-link"><i class="fa fa-external-link"></i></a>').attr({
                 href: repoUrl,
                 target: '_blank',

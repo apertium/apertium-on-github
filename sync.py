@@ -247,11 +247,11 @@ def main():
     parser.add_argument(
         'action',
         choices={'startserver', 'sync'},
-        help='use "startserver" to start the server and "sync --repo [name]" to force an sync',
+        help='use "startserver" to start the server and "sync --repo [name]" to force a sync',
     )
     parser.add_argument('--verbose', '-v', action='count', help='adjust verbosity', default=0)
     parser.add_argument('--dir', '-d', help='directory to clone meta repos', default=DEFAULT_CLONE_DIR)
-    parser.add_argument('--repo', '-r', help='repository to sync (required with sync action)')
+    parser.add_argument('--repo', '-r', help='repository to sync (required with sync action)', choices=list(REPOS.keys()))
     parser.add_argument('--port', '-p', type=int, help='server port (default: {})'.format(DEFAULT_PORT), default=DEFAULT_PORT)
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
     args = parser.parse_args()

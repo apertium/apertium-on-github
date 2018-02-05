@@ -1,8 +1,8 @@
 #!/bin/sh
-source "${BASH_SOURCE[0]%/*}/util.sh"
+source util.sh
 
 # setup the remainder
-METAREPOS=(apertium-staging)
+METAREPOS=(apertium-staging apertium-nursery apertium-incubator apertium-trunk apertium-languages)
 for repo in "${METAREPOS[@]}"
 do
     create_repo $repo

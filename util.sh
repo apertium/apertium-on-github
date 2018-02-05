@@ -4,7 +4,7 @@ set -x -u -e
 
 USER='sushain97'
 ORG='mock-apertium'
-CWD=${BASH_SOURCE[0]%/*}
+LANG_RE='\w{2,3}(_\w{2,3})?'
 
 delete_repo () {
     curl -X DELETE https://api.github.com/repos/$ORG/$1 -u $USER:$GITHUB_OAUTH_TOKEN

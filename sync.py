@@ -30,9 +30,11 @@ import urllib.request
 
 GITHUB_API = 'https://api.github.com/graphql'
 DEFAULT_PORT = 9712
+DEFAULT_OAUTH_TOKEN = os.environ.get('GITHUB_OAUTH_TOKEN')
 DEFAULT_CLONE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'repos')
-# meta repo name => topics of the repos it should contain
 ORGANIZATION = 'mock-apertium'
+
+# meta repo name => repo topics (repos with these topics will be contained in the meta-repo)
 REPOS = {
     'apertium-all': {
         'apertium-core',
@@ -50,10 +52,9 @@ REPOS = {
     'apertium-tools': {'apertium-tools'},
     'apertium-trunk': {'apertium-trunk'},
 }
-DEFAULT_OAUTH_TOKEN = os.environ.get('GITHUB_OAUTH_TOKEN')
+
 
 httpd = None
-
 
 def close_socket():
     global httpd
@@ -102,8 +103,7 @@ def _list_repos(token, after=None):
                   hasNextPage
                 }
               }
-            }
-          }''' % (', after: "{}"'.format(after) if after else ''))
+            }''').format(ORGANIZATION, (', after: "{}"'.format(after) if after else ''))
     }).encode("utf-8")
     request = urllib.request.Request(GITHUB_API, data=request_data, headers=headers)
     response = urllib.request.urlopen(request).read()
@@ -121,7 +121,7 @@ def list_repos(token):
     logging.info('Listing repositories')
     repos = _list_repos(token, after=None)
     logging.info('Fetched list of %d repositories', len(repos))
-    logging.debug('Feched repositories: %s', pprint.pformat(repos, indent=2))
+    logging.debug('Feched repositories:\n%s', pprint.pformat(repos, indent=2))
     return repos
 
 
@@ -131,7 +131,7 @@ def group_repos_by_topic(repos):
         name = repo['node']['name']
         for topicNode in repo['node']['repositoryTopics']['nodes']:
             groups[topicNode['topic']['name']].append(name)
-    logging.debug('Grouped repositories: %s', groups)
+    logging.debug('Grouped repositories:\n%s', pprint.pformat(groups, indent=2))
     return groups
 
 
@@ -151,14 +151,15 @@ def sync_metarepo(clone_dir, name, submodules):
     subprocess.check_call(shlex.split('git pull --ff-only'), cwd=metarepo_dir)
     subprocess.check_call(shlex.split('git submodule update --recursive --remote'), cwd=metarepo_dir)
     changeset = subprocess.check_output(shlex.split('git diff --name-only'), cwd=metarepo_dir, universal_newlines=True).splitlines()
-    logging.debug('Changeset is %s', changeset)
+    logging.debug('Changeset is:\n%s', pprint.pformat(changeset, indent=2))
     submodule_changeset = list(filter(lambda change: change in submodules, changeset))
-    logging.debug('Submodule changeset is %s', submodule_changeset)
+    logging.debug('Submodule changeset is:\n%s', pprint.pformat(submodule_changeset, indent=2))
     logging.info('Meta repository %s saw %d updated submodules', name, len(submodule_changeset))
 
     # Add / Remove Submodules
-    args = shlex.split('git config --file .gitmodules --name-only --get-regexp path')
-    submodule_list_output = subprocess.check_output(args, cwd=metarepo_dir, universal_newlines=True)
+    submodule_list_output = subprocess.check_output(
+        shlex.split('git config --file .gitmodules --name-only --get-regexp path'),
+        cwd=metarepo_dir, universal_newlines=True)
     submodules_present = set(map(lambda line: line.split('.')[1], submodule_list_output.splitlines()))
     submodules_missing = submodules - submodules_present
     submodules_extra = submodules_present - submodules
@@ -172,8 +173,9 @@ def sync_metarepo(clone_dir, name, submodules):
 
     for submodule in submodules_missing:
         logging.debug('Adding submodule %s to meta repository %s', submodule, name)
-        args = shlex.split('git submodule add -b master git@github.com:{}/{}.git'.format(ORGANIZATION, submodule))
-        subprocess.check_call(args, cwd=metarepo_dir)
+        subprocess.check_call(
+            shlex.split('git submodule add -b master git@github.com:{}/{}.git'.format(ORGANIZATION, submodule)),
+            cwd=metarepo_dir)
 
     # Commit and Push
     clean = subprocess.call(shlex.split('git diff-index --quiet HEAD --'), cwd=metarepo_dir) == 0
@@ -189,7 +191,7 @@ def sync_metarepo(clone_dir, name, submodules):
             ', '.join(submodules_extra) or 'None',
             ', '.join(submodules_missing) or 'None',
         ))
-        logging.debug('Meta repository %s commit message: %s', name, commit_message)
+        logging.debug('Meta repository %s commit message:\n%s', name, pprint.pformat(commit_message, indent=2))
         subprocess.check_call(shlex.split('git commit -a -m "{}"'.format(commit_message)), cwd=metarepo_dir)
         subprocess.check_call(shlex.split('git push'), cwd=metarepo_dir)
     else:
@@ -200,6 +202,7 @@ def handle_event(args, payload):
     repos = list_repos(args.token)
     repos_by_topic = group_repos_by_topic(repos)
     for name, topics in REPOS.items():
+        # submodules = all repos that have any of the topics required to be in any meta-repo
         submodules = functools.reduce(operator.or_, map(lambda topic: set(repos_by_topic[topic]), topics))
         sync_metarepo(args.dir, name, submodules)
 
@@ -209,18 +212,18 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         try:
             length = int(self.headers['Content-Length'])
             payload = json.loads(self.rfile.read(length))
-            logging.debug('Recieved payload %s', pprint.pformat(payload, indent=2))
+            logging.debug('Recieved payload:\n%s', pprint.pformat(payload, indent=2))
             event = self.headers['X-Github-Event']
             if event in {'push', 'repository'}:
                 handle_event(self.server.args, payload)
+                self.send_response(200)
             else:
                 logging.warn('Ignoring %s event', event)
-            self.send_response(200)
-            self.send_header('Content-type', 'text/plain')
-            self.end_headers()
+                self.send_response(501)
         except Exception as error:
             logging.error('Error while handling payload %s', error, exc_info=True)
             self.send_response(500)
+        finally:
             self.send_header('Content-type', 'text/plain')
             self.end_headers()
 
@@ -247,11 +250,11 @@ def main():
     parser.add_argument(
         'action',
         choices={'startserver', 'sync'},
-        help='use "startserver" to start the server and "sync --repo [name]" to force an sync',
+        help='use "startserver" to start the server and "sync --repo [name]" to force a meta-repo sync',
     )
-    parser.add_argument('--verbose', '-v', action='count', help='adjust verbosity', default=0)
+    parser.add_argument('--verbose', '-v', action='count', help='add verbosity (maximum -v -v)', default=0)
     parser.add_argument('--dir', '-d', help='directory to clone meta repos', default=DEFAULT_CLONE_DIR)
-    parser.add_argument('--repo', '-r', help='repository to sync (required with sync action)')
+    parser.add_argument('--repo', '-r', help='meta-repo to sync (required with sync action)')
     parser.add_argument('--port', '-p', type=int, help='server port (default: {})'.format(DEFAULT_PORT), default=DEFAULT_PORT)
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
     args = parser.parse_args()
@@ -272,6 +275,7 @@ def main():
         repos = list_repos(args.token)
         repos_by_topic = group_repos_by_topic(repos)
         topics = REPOS[args.repo]
+        # submodules = all repos that have any of the topics required to be in this meta-repo (in args.repo)
         submodules = functools.reduce(operator.or_, map(lambda topic: set(repos_by_topic[topic]), topics))
         sync_metarepo(args.dir, args.repo, submodules)
 

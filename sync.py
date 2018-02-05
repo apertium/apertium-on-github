@@ -84,8 +84,8 @@ def _list_repos(token, after=None):
     request_data = json.dumps({
         'query': textwrap.dedent('''
           {
-            organization(login: "mock-apertium") {
-              repositories(first: 100%s) {
+            organization(login: {}) {
+              repositories(first: 100{}) {
                 edges {
                   node {
                     name

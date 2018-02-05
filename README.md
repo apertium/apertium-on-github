@@ -25,9 +25,7 @@ Structure
 Transition
 ----------
 
-- TODO: import document and finish scripts
-- TODO: svn propset script
-- TODO: org setup (including pinning and locking metarepos?)
+TODO
 
 Maintenance
 -----------
@@ -80,4 +78,6 @@ Helpful Git Commands
 - Kernel.org's [Git for SVN users cheatsheet](https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf).
 - Meta repository commands
   - To checkout a meta repository, use `git clone --recursive -j8 [url]`.
-  - To pull (update) a meta repository, use `git pull --recurse-submodules`. Never use `git submodule update`, you will get conflicts.
+  - To pull (update) a meta repository, use `git pull --recurse-submodules`. Never use `git submodule update`, you will get conflicts with the sync script's pushes.
+  - To push changes to submodules within a meta repository, use `git submodule foreach git push`.
+- Use Git [alias](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases) for any oft used commands.

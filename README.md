@@ -3,6 +3,7 @@ Apertium on Github
 
 Proposal
 --------
+
 See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_proposals/Move_Apertium_to_Github).
 
 Structure
@@ -69,9 +70,8 @@ pinning up to six repositories, searching is cumbersome and there are no custom
 layout options.
 
 The source for this interface is `source-browser.html`. For the sake of simplicity,
-only modern browsers are supported.
-
-- TODO: use GH pages
+only modern browsers are supported. It is made available via
+[GH pages](https://sushain97.github.io/apertium-on-github/source-browser.html).
 
 Helpful Git Commands
 --------------------

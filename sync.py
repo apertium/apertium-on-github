@@ -141,7 +141,7 @@ def sync_metarepo(clone_dir, name, submodules):
     logging.info('Updating meta repository %s with %d submodules', name, len(submodules))
     if not os.path.isdir(os.path.join(clone_dir, name)):
         logging.info('Cloning meta repository %s', name)
-        subprocess.check_call(shlex.split('git clone --recursive -j8 git@github.com:{}/{}.git'.format(ORGANIZATION, name)), cwd=clone_dir)
+        subprocess.check_call(shlex.split('git clone --recursive --jobs 8 git@github.com:{}/{}.git'.format(ORGANIZATION, name)), cwd=clone_dir)
     else:
         logging.debug('Meta repository %s already cloned', name)
 
@@ -150,7 +150,7 @@ def sync_metarepo(clone_dir, name, submodules):
     metarepo_dir = os.path.join(clone_dir, name)
     metarepo_check_call = functools.partial(subprocess.check_call, cwd=metarepo_dir)
     metarepo_check_call(shlex.split('git pull --ff-only'))
-    metarepo_check_call(shlex.split('git submodule update --recursive --remote'))
+    metarepo_check_call(shlex.split('git submodule update --jobs 8 --remote'))
     changeset = subprocess.check_output(shlex.split('git diff --name-only'), cwd=metarepo_dir, universal_newlines=True).splitlines()
     logging.debug('Changeset is: %s', changeset)
     submodule_changeset = list(filter(lambda change: change in submodules, changeset))
@@ -170,15 +170,13 @@ def sync_metarepo(clone_dir, name, submodules):
 
     for submodule in submodules_extra:
         logging.debug('Removing submodule %s from meta repository %s', submodule, name)
-        metarepo_check_call(shlex.split('git submodule deinit -f {}'.format(submodule)))
+        metarepo_check_call(shlex.split('git submodule deinit --force {}'.format(submodule)))
         metarepo_check_call(shlex.split('rm -rf .git/modules/{}'.format(submodule)))
-        metarepo_check_call(shlex.split('git rm -f {}'.format(submodule)))
+        metarepo_check_call(shlex.split('git rm --force {}'.format(submodule)))
 
     for submodule in submodules_missing:
         logging.debug('Adding submodule %s to meta repository %s', submodule, name)
-        subprocess.check_call(
-            shlex.split('git submodule add -b master git@github.com:{}/{}.git'.format(ORGANIZATION, submodule)),
-            cwd=metarepo_dir)
+        metarepo_check_call(shlex.split('git submodule add --branch master git@github.com:{}/{}.git'.format(ORGANIZATION, submodule)))
 
     # Commit and Push
     clean = subprocess.call(shlex.split('git diff-index --quiet HEAD --'), cwd=metarepo_dir) == 0
@@ -195,7 +193,7 @@ def sync_metarepo(clone_dir, name, submodules):
             ', '.join(submodules_missing) or 'None',
         ))
         logging.debug('Meta repository %s commit message:\n%s', name, pprint.pformat(commit_message, indent=2))
-        metarepo_check_call(shlex.split('git commit -a -m "{}"'.format(commit_message)))
+        metarepo_check_call(shlex.split('git commit --all --message "{}"'.format(commit_message)))
         metarepo_check_call(shlex.split('git push'))
     else:
         logging.info('Meta repository %s requires no changes', name)

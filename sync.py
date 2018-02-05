@@ -32,7 +32,6 @@ GITHUB_API = 'https://api.github.com/graphql'
 DEFAULT_PORT = 9712
 DEFAULT_OAUTH_TOKEN = os.environ.get('GITHUB_OAUTH_TOKEN')
 DEFAULT_CLONE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'repos')
-ORGANIZATION = 'mock-apertium'
 
 # meta repo name => repo topics (repos with these topics will be contained in the meta-repo)
 REPOS = {
@@ -47,6 +46,7 @@ REPOS = {
     'apertium-tools': {'apertium-tools'},
     'apertium-trunk': {'apertium-trunk'},
 }
+ORGANIZATION = 'mock-apertium'
 
 
 httpd = None
@@ -132,6 +132,10 @@ def group_repos_by_topic(repos):
     return groups
 
 
+def repos_for_topics(repos_by_topic, topics):
+    return functools.reduce(operator.or_, map(lambda topic: set(repos_by_topic[topic]), topics))
+
+
 def sync_metarepo(clone_dir, name, submodules):
     # Clone
     logging.info('Updating meta repository %s with %d submodules', name, len(submodules))
@@ -201,8 +205,7 @@ def handle_event(args, payload):
     repos = list_repos(args.token)
     repos_by_topic = group_repos_by_topic(repos)
     for name, topics in REPOS.items():
-        # submodules = all repos that have any of the topics required to be in any meta-repo
-        submodules = functools.reduce(operator.or_, map(lambda topic: set(repos_by_topic[topic]), topics))
+        submodules = repos_for_topics(repos_by_topic, topics)
         sync_metarepo(args.dir, name, submodules)
 
 
@@ -273,8 +276,7 @@ def main():
         repos = list_repos(args.token)
         repos_by_topic = group_repos_by_topic(repos)
         topics = REPOS[args.repo]
-        # submodules = all repos that have any of the topics required to be in this meta-repo (in args.repo)
-        submodules = functools.reduce(operator.or_, map(lambda topic: set(repos_by_topic[topic]), topics))
+        submodules = repos_for_topics(repos_by_topic, topics)
         sync_metarepo(args.dir, args.repo, submodules)
 
 

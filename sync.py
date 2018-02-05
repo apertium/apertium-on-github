@@ -148,9 +148,9 @@ def sync_metarepo(clone_dir, name, submodules):
     metarepo_check_call(shlex.split('git pull --ff-only'))
     metarepo_check_call(shlex.split('git submodule update --recursive --remote'))
     changeset = subprocess.check_output(shlex.split('git diff --name-only'), cwd=metarepo_dir, universal_newlines=True).splitlines()
-    logging.debug('Changeset is:\n%s', pprint.pformat(changeset, indent=2))
+    logging.debug('Changeset is: %s', changeset)
     submodule_changeset = list(filter(lambda change: change in submodules, changeset))
-    logging.debug('Submodule changeset is:\n%s', pprint.pformat(submodule_changeset, indent=2))
+    logging.debug('Submodule changeset is: %s', submodule_changeset)
     logging.info('Meta repository %s saw %d updated submodules', name, len(submodule_changeset))
 
     # Add / Remove Submodules

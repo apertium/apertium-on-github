@@ -5,7 +5,7 @@ source util.sh
 languages=( $(svn ls https://svn.code.sf.net/p/apertium/svn/languages | grep -E "^apertium-$LANG_RE/$" | cut -d '/' -f 1) )
 for lang in "${languages[@]}"
 do
-    import_create_and_push_repo "https://svn.code.sf.net/p/apertium/svn/languages/$lang/" $lang '["languages"]'
+    import_create_and_push_repo "https://svn.code.sf.net/p/apertium/svn/languages/$lang/" $lang '["apertium-languages"]'
 done
 
 modules=( $(svn ls https://svn.code.sf.net/p/apertium/svn/incubator | grep -E "^apertium-$LANG_RE(-$LANG_RE)?/$" | cut -d '/' -f 1) )

@@ -11,12 +11,12 @@ Structure
 
 - Each package will have its own repository.
 - "Meta repositories" will contain only submodules.
-  - `apertium-all` will contain repos with topics `apertium-core`, `apertium-tools`, `apertium-staging`, `apertium-incubator`, `apertium-nursery`, `apertium-trunk`.
+  - `apertium-all` will be the root repo, containing repos with topics `apertium-core` and `apertium-all` (the latter are the repos below).
   - `apertium-tools` will contain tools (repos with topic `apertium-tools`).
   - `apertium-staging` will contain staging language pairs (repos with topic `apertium-staging`).
   - `apertium-nursery` will contain nursery language pairs (repos with topic `apertium-nursery`).
   - `apertium-incubator` will contain staging language modules/pairs (repos with topic `apertium-incubator`).
-  - `apertium-trunk` will contain trunk language modules/pairs(repos with topic `apertium-trunk`).
+  - `apertium-trunk` will contain trunk language modules/pairs (repos with topic `apertium-trunk`).
 - Meta repositories will be kept up-to-date by `sync.py` (described below).
 - SVN external properties will be used to maintain some backwards compatability.
 
@@ -25,7 +25,33 @@ Structure
 Transition
 ----------
 
-TODO
+- TODO: import document and finish scripts
+- TODO: svn propset script
+
+When created, all package repositories (pairs/languages/tools) will belong to
+the [apertium GitHub organization][2]. Members of the PMC will be 'owners' of
+this organization and all other Apertium contributors will be 'members'. Their
+permissions regarding the organization are given [here][1].
+
+Each repository will have the following permission levels:
+- 'owner': (same for all packages) PMC members
+- 'admin': (package-specific) one or more 'package maintainers' who will merge
+           pull requests, change continuous integration settings, etc.
+- 'write': (package-specific) Apertium contributors who have been given commit
+           access
+- 'read': (same for all packages) any GitHub user
+
+(More information about repository permission levels is given [here][3].)
+
+The meta-repositories `apertium-all`, `apertium-tools`, `apertium-staging`,
+`apertium-nursery`, `apertium-incubator`, and `apertium-trunk` should be
+['pinned repositories'][4] for the organization so that they are at the top of
+the list of repositories when a user lands on the organization page.
+
+Note that nobody should have write permissions for these meta-repositories,
+except owners of course. Their contents will, for the most part, be updated
+automatically via the [`sync.py`][5] script.
+
 
 Maintenance
 -----------
@@ -82,3 +108,10 @@ Helpful Git Commands
   - To pull (update) a meta repository, use `git pull --recurse-submodules`. Never use `git submodule update`, you will get conflicts with the sync script's pushes.
   - To push changes to submodules within a meta repository, use `git submodule foreach git push`.
 - Use Git [alias](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases) for any oft used commands.
+
+
+[1]: https://help.github.com/articles/permission-levels-for-an-organization/
+[2]: https://github.com/orgs/apertium/
+[3]: https://help.github.com/articles/repository-permission-levels-for-an-organization/
+[4]: https://github.com/blog/2191-pin-repositories-to-your-github-profile
+[5]: https://github.com/sushain97/apertium-on-github/blob/master/sync.py

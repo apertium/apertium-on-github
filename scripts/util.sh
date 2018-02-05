@@ -30,3 +30,11 @@ import_repo () {
     cp $CWD/../authors.txt $2.git/subgit/authors.txt
     $CWD/../subgit-3.2.6/bin/subgit install $2.git
 }
+
+push_bare_repo () {
+    (
+        cd $1.git/
+        git remote add origin git@github.com:$ORG/$1.git
+        git push origin --force --all
+    )
+}

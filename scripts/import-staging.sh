@@ -12,12 +12,9 @@ do
 
     # setup the new repo
     create_repo $pair
-    cd $pair.git/
-    git remote add origin git@github.com:$ORG/$pair.git
-    git push origin --force --all
+    push_bare_repo $pair
     set_repo_topics $pair '["apertium-staging"]'
 
     # clean up
-    cd ..
     rm -rf $pair.git/
 done

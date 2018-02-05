@@ -12,12 +12,9 @@ do
 
     # setup the new repo
     create_repo $lang
-    cd $lang.git/
-    git remote add origin git@github.com:$ORG/$lang.git
-    git push origin --force --all
+    push_bare_repo $lang
     set_repo_topics $lang '["languages"]'
 
     # clean up
-    cd ..
     rm -rf $lang.git/
 done

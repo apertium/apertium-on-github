@@ -56,6 +56,7 @@ REPOS = {
 
 httpd = None
 
+
 def close_socket():
     global httpd
     if httpd:
@@ -141,17 +142,16 @@ def sync_metarepo(clone_dir, name, submodules):
     logging.info('Updating meta repository %s with %d submodules', name, len(submodules))
     if not os.path.isdir(os.path.join(clone_dir, name)):
         logging.info('Cloning meta repository %s', name)
-        subprocess.check_call(
-            shlex.split('git clone --recursive -j8 git@github.com:{}/{}.git'.format(ORGANIZATION, name)),
-            cwd=clone_dir)
+        subprocess.check_call(shlex.split('git clone --recursive -j8 git@github.com:{}/{}.git'.format(ORGANIZATION, name)), cwd=clone_dir)
     else:
         logging.debug('Meta repository %s already cloned', name)
 
     # Update
     logging.info('Updating meta repository %s', name)
     metarepo_dir = os.path.join(clone_dir, name)
-    subprocess.check_call(shlex.split('git pull --ff-only'), cwd=metarepo_dir)
-    subprocess.check_call(shlex.split('git submodule update --recursive --remote'), cwd=metarepo_dir)
+    metarepo_check_call = functools.partial(subprocess.check_call, cwd=metarepo_dir)
+    metarepo_check_call(shlex.split('git pull --ff-only'))
+    metarepo_check_call(shlex.split('git submodule update --recursive --remote'))
     changeset = subprocess.check_output(shlex.split('git diff --name-only'), cwd=metarepo_dir, universal_newlines=True).splitlines()
     logging.debug('Changeset is:\n%s', pprint.pformat(changeset, indent=2))
     submodule_changeset = list(filter(lambda change: change in submodules, changeset))
@@ -159,9 +159,7 @@ def sync_metarepo(clone_dir, name, submodules):
     logging.info('Meta repository %s saw %d updated submodules', name, len(submodule_changeset))
 
     # Add / Remove Submodules
-    submodule_list_output = subprocess.check_output(
-        shlex.split('git config --file .gitmodules --name-only --get-regexp path'),
-        cwd=metarepo_dir, universal_newlines=True)
+    submodule_list_output = metarepo_check_call(shlex.split('git config --file .gitmodules --name-only --get-regexp path'), universal_newlines=True)
     submodules_present = set(map(lambda line: line.split('.')[1], submodule_list_output.splitlines()))
     submodules_missing = submodules - submodules_present
     submodules_extra = submodules_present - submodules
@@ -169,9 +167,9 @@ def sync_metarepo(clone_dir, name, submodules):
 
     for submodule in submodules_extra:
         logging.debug('Removing submodule %s from meta repository %s', submodule, name)
-        subprocess.check_call(shlex.split('git submodule deinit -f {}'.format(submodule), cwd=metarepo_dir))
-        subprocess.check_call(shlex.split('rm -rf .git/modules/{}'.format(submodule), cwd=metarepo_dir))
-        subprocess.check_call(shlex.split('git rm -f {}'.format(submodule), cwd=metarepo_dir))
+        metarepo_check_call(shlex.split('git submodule deinit -f {}'.format(submodule)))
+        metarepo_check_call(shlex.split('rm -rf .git/modules/{}'.format(submodule)))
+        metarepo_check_call(shlex.split('git rm -f {}'.format(submodule)))
 
     for submodule in submodules_missing:
         logging.debug('Adding submodule %s to meta repository %s', submodule, name)
@@ -194,8 +192,8 @@ def sync_metarepo(clone_dir, name, submodules):
             ', '.join(submodules_missing) or 'None',
         ))
         logging.debug('Meta repository %s commit message:\n%s', name, pprint.pformat(commit_message, indent=2))
-        subprocess.check_call(shlex.split('git commit -a -m "{}"'.format(commit_message)), cwd=metarepo_dir)
-        subprocess.check_call(shlex.split('git push'), cwd=metarepo_dir)
+        metarepo_check_call(shlex.split('git commit -a -m "{}"'.format(commit_message)))
+        metarepo_check_call(shlex.split('git push'))
     else:
         logging.info('Meta repository %s requires no changes', name)
 
@@ -254,7 +252,7 @@ def main():
         choices={'startserver', 'sync'},
         help='use "startserver" to start the server and "sync --repo [name]" to force a meta-repo sync',
     )
-    parser.add_argument('--verbose', '-v', action='count', help='add verbosity (maximum -v -v)', default=0)
+    parser.add_argument('--verbose', '-v', action='count', help='add verbosity (maximum -vv)', default=0)
     parser.add_argument('--dir', '-d', help='directory to clone meta repos', default=DEFAULT_CLONE_DIR)
     parser.add_argument('--repo', '-r', help='meta-repo to sync (required with sync action)')
     parser.add_argument('--port', '-p', type=int, help='server port (default: {})'.format(DEFAULT_PORT), default=DEFAULT_PORT)

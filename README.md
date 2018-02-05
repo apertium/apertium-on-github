@@ -37,23 +37,24 @@ Maintenance
 
 Usage:
 
+    $ ./sync.py --help
     usage: sync.py [-h] [--verbose] [--dir DIR] [--repo REPO] [--port PORT]
-                [--token TOKEN]
-                {sync,startserver}
+                  [--token TOKEN]
+                  {sync,startserver}
 
     Sync Apertium meta repositories.
 
     positional arguments:
-    {sync,startserver}    use "startserver" to start the server and "sync --repo
-                            [name]" to force an sync
+      {sync,startserver}    use "startserver" to start the server and "sync --repo
+                            [name]" to force a meta-repo sync
 
     optional arguments:
-    -h, --help            show this help message and exit
-    --verbose, -v         adjust verbosity
-    --dir DIR, -d DIR     directory to clone meta repos
-    --repo REPO, -r REPO  repository to sync (required with sync action)
-    --port PORT, -p PORT  server port (default: 9712)
-    --token TOKEN, -t TOKEN
+      -h, --help            show this help message and exit
+      --verbose, -v         add verbosity (maximum -vv)
+      --dir DIR, -d DIR     directory to clone meta repos
+      --repo REPO, -r REPO  meta-repo to sync (required with sync action)
+      --port PORT, -p PORT  server port (default: 9712)
+      --token TOKEN, -t TOKEN
                             GitHub OAuth token
 
 The GitHub OAuth token can also be set by exporting `GITHUB_OAUTH_TOKEN`:

@@ -52,6 +52,7 @@ Note that nobody should have write permissions for these meta-repositories,
 except owners of course. Their contents will, for the most part, be updated
 automatically via the [`sync.py`][5] script.
 
+
 Maintenance
 -----------
 
@@ -62,23 +63,24 @@ Maintenance
 
 Usage:
 
+    $ ./sync.py --help
     usage: sync.py [-h] [--verbose] [--dir DIR] [--repo REPO] [--port PORT]
-                [--token TOKEN]
-                {sync,startserver}
+                  [--token TOKEN]
+                  {sync,startserver}
 
     Sync Apertium meta repositories.
 
     positional arguments:
-    {sync,startserver}    use "startserver" to start the server and "sync --repo
-                            [name]" to force an sync
+      {sync,startserver}    use "startserver" to start the server and "sync --repo
+                            [name]" to force a meta-repo sync
 
     optional arguments:
-    -h, --help            show this help message and exit
-    --verbose, -v         adjust verbosity
-    --dir DIR, -d DIR     directory to clone meta repos
-    --repo REPO, -r REPO  repository to sync (required with sync action)
-    --port PORT, -p PORT  server port (default: 9712)
-    --token TOKEN, -t TOKEN
+      -h, --help            show this help message and exit
+      --verbose, -v         add verbosity (maximum -vv)
+      --dir DIR, -d DIR     directory to clone meta repos
+      --repo REPO, -r REPO  meta-repo to sync (required with sync action)
+      --port PORT, -p PORT  server port (default: 9712)
+      --token TOKEN, -t TOKEN
                             GitHub OAuth token
 
 The GitHub OAuth token can also be set by exporting `GITHUB_OAUTH_TOKEN`:
@@ -103,11 +105,13 @@ Helpful Git Commands
 - Kernel.org's [Git for SVN users cheatsheet](https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf).
 - Meta repository commands
   - To checkout a meta repository, use `git clone --recursive -j8 [url]`.
-  - To pull (update) a meta repository, use `git pull --recurse-submodules`. Never use `git submodule update`, you will get conflicts.
+  - To pull (update) a meta repository, use `git pull --recurse-submodules`. Never use `git submodule update`, you will get conflicts with the sync script's pushes.
+  - To push changes to submodules within a meta repository, use `git submodule foreach git push`.
+- Use Git [alias](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases) for any oft used commands.
 
 
-  [1]: https://help.github.com/articles/permission-levels-for-an-organization/
-  [2]: https://github.com/orgs/apertium/
-  [3]: https://help.github.com/articles/repository-permission-levels-for-an-organization/
-  [4]: https://github.com/blog/2191-pin-repositories-to-your-github-profile
-  [5]: https://github.com/sushain97/apertium-on-github/blob/master/sync.py
+[1]: https://help.github.com/articles/permission-levels-for-an-organization/
+[2]: https://github.com/orgs/apertium/
+[3]: https://help.github.com/articles/repository-permission-levels-for-an-organization/
+[4]: https://github.com/blog/2191-pin-repositories-to-your-github-profile
+[5]: https://github.com/sushain97/apertium-on-github/blob/master/sync.py

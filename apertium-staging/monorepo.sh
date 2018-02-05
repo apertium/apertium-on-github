@@ -12,7 +12,7 @@ do
     git submodule add -b master git@github.com:$ORG/$lang.git
 done
 wget https://svn.code.sf.net/p/apertium/svn/staging/001-README -O README.md
-git commit  -a -m "Update submodules"
+git commit  -a -m "Initialize submodules"
 git push
 
 cd ..

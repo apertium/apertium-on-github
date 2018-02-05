@@ -204,10 +204,7 @@ def handle_event(args, payload):
         sync_metarepo(args.dir, name, submodules)
 
 
-class RequestHandler(http.server.SimpleHTTPRequestHandler):
-    def __init__(self, args):
-        self.args = args
-
+class RequestHandler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             length = int(self.headers['Content-Length'])
@@ -215,18 +212,24 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
             logging.debug('Recieved payload %s', pprint.pformat(payload, indent=2))
             event = self.headers['X-Github-Event']
             if event in {'push', 'repository'}:
-                handle_event(self.args, payload)
+                handle_event(self.server.args, payload)
             else:
                 logging.warn('Ignoring %s event', event)
             self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
             self.end_headers()
         except Exception as error:
             logging.error('Error while handling payload %s', error, exc_info=True)
             self.send_response(500)
+            self.send_header('Content-type', 'text/plain')
             self.end_headers()
 
 
 class PortReuseTCPServer(socketserver.TCPServer):
+    def __init__(self, cli_args, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.args = cli_args
+
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(self.server_address)
@@ -234,7 +237,7 @@ class PortReuseTCPServer(socketserver.TCPServer):
 
 def start_server(args):
     global httpd
-    httpd = PortReuseTCPServer(('', args.port), RequestHandler(args))
+    httpd = PortReuseTCPServer(args, ('', args.port), RequestHandler)
     logging.info('Starting server on port %d', args.port)
     httpd.serve_forever()
 

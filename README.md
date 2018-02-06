@@ -58,17 +58,16 @@ GitHub accounts. Utility functions are located in `util.sh`.
   `github-repo-name` and the given (possibly only one) topics.
 - `import-modules.sh` imports all language pairs, modules, and the Apertium core
   from SVN to Github.
-- `create-metarepos.sh` creates all the mono-repos and syncs the submodules
-  that are created by `import-modules.sh`.
+- `create-metarepos.sh` creates all the mono-repos and syncs their submodules
 
 For the actual migration, an owner of the [apertium GitHub organization][2]
 needs to:
-1. create a [GitHub OAuth token][7] with 'repo' permissions
-1. run `export GITHUB_OAUTH_TOKEN=<token from above>` to set the environment variable
-1. download and unzip [SubGit][6] in the current directory
-1. edit line 5 with their own GitHub username, and line 6 with `apertium`
-1. run `./import-modules.sh`
-1. run `./create-metarepos.sh`
+1. Create a [GitHub OAuth token][7] with 'repo' permissions.
+1. Run `export GITHUB_OAUTH_TOKEN=<token from above>` to set the environment variable.
+1. Download and unzip [SubGit][6] in the current directory.
+1. Edit line 5 of `util.sh` with their own GitHub username and line 6 with `apertium`.
+1. Run `./import-modules.sh`.
+1. Run `./create-metarepos.sh`.
 
 - TODO: svn propset script
 

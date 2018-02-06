@@ -64,7 +64,7 @@ GitHub accounts. Utility functions are located in `util.sh`.
 For the actual migration, an owner of the [apertium GitHub organization][2]
 needs to:
 1. create a [GitHub OAuth token][7] with 'repo' permissions
-1. set the environment variable `GITHUB_OAUTH_TOKEN` with the token above
+1. run `export GITHUB_OAUTH_TOKEN=<token from above>` to set the environment variable
 1. download and unzip [SubGit][6] in the current directory
 1. edit line 5 with their own GitHub username, and line 6 with `apertium`
 1. run `./import-modules.sh`
@@ -101,9 +101,9 @@ Usage:
       --token TOKEN, -t TOKEN
                             GitHub OAuth token
 
-The GitHub OAuth token can also be set by exporting `GITHUB_OAUTH_TOKEN`:
-
-    export GITHUB_OAUTH_TOKEN=XXX
+The GitHub OAuth token is described in the 'Scripts' section above. For
+`sync.py`, it can also be set through the environment variable
+`GITHUB_OAUTH_TOKEN`.
 
 ## Interface
 

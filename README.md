@@ -53,7 +53,7 @@ and use the `authors.txt` file to convert
 SVN users to GitHub emails to establish connections between commits and
 GitHub accounts. Utility functions are located in `util.sh`.
 
-- `import-repo.sh "svn-url" "github-repo-name" "[github-topic-1, github-topic-2, ...]"`
+- `import-repo.sh "svn-url" "github-repo-name" '["github-topic-1", "github-topic-2", ...]'`
   will import the SVN repo at `svn-url` to GitHub with the name
   `github-repo-name` and the given (possibly only one) topics.
 - `import-modules.sh` imports all language pairs, modules, and the Apertium core

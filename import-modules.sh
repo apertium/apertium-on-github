@@ -14,7 +14,7 @@ do
     import_create_and_push_repo "https://svn.code.sf.net/p/apertium/svn/incubator/$module/" $module '["apertium-incubator"]'
 done
 
-PAIR_LOCATIONS=(nursery incubator trunk)
+PAIR_LOCATIONS=(nursery staging trunk)
 for pair_location in "${PAIR_LOCATIONS[@]}"
 do
     pairs=( $(svn ls https://svn.code.sf.net/p/apertium/svn/${pair_location} | grep -E "^apertium-$LANG_RE-$LANG_RE/$" | cut -d '/' -f 1) )

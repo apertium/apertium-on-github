@@ -53,10 +53,10 @@ SVN users to GitHub emails to establish connections between commits and
 GitHub accounts. Utility functions are located in `util.sh`.
 
 - `import-repo.sh [svn-url] [github-repo-name] [github-topic]` will import a
-  single repository from SVN to GitHub.
+  single repo from SVN to GitHub.
 - `import-modules.sh` imports all language pairs and modules from SVN to Github.
-- `create-metarepos.sh` creates the mono-repositories and syncs the correct
-  submodules after they are created by `import-modules.sh`.
+- `create-metarepos.sh` creates all the mono-repositories and syncs the submodules
+  that are created by `import-modules.sh`.
 
 - TODO: svn propset script
 

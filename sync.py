@@ -206,6 +206,7 @@ def sync_metarepo(clone_dir, name, submodules):
 def handle_events(args, event_queue):
     # wait for an event
     event_queue.get()
+    logging.info('Starting meta repository update')
 
     # discard any other piled up events
     while not event_queue.empty():
@@ -225,6 +226,7 @@ def handle_events(args, event_queue):
 
     # mark as complete and schedule next handler
     event_queue.task_done()
+    logging.info('Scheduling next meta repository update')
     threading.Timer(args.sync_interval, handle_events, [args, event_queue]).start()
 
 

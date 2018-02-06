@@ -13,6 +13,7 @@ import argparse
 import atexit
 import collections
 import concurrent.futures
+import contextlib
 import functools
 import http.server
 import json
@@ -210,13 +211,11 @@ def handle_events(args, event_queue):
 
     # discard any other piled up events
     while not event_queue.empty():
-        try:
-            event_queue.get(blocking=False)
-        except queue.Empty:
-            continue
-        event_queue.task_done()
+        with contextlib.suppress(queue.Empty):
+            event_queue.get_nowait()
+            event_queue.task_done()
 
-    # update the meta repos
+    # update the meta repos and block until completion
     repos = list_repos(args.token)
     repos_by_topic = group_repos_by_topic(repos)
     with concurrent.futures.ThreadPoolExecutor() as pool:

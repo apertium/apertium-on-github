@@ -12,6 +12,7 @@ __license__ = "GPLv3+"
 import argparse
 import atexit
 import collections
+import concurrent.futures
 import functools
 import http.server
 import json
@@ -19,6 +20,7 @@ import logging
 import operator
 import os
 import pprint
+import queue
 import shlex
 import signal
 import socket
@@ -26,12 +28,14 @@ import socketserver
 import subprocess
 import sys
 import textwrap
+import threading
 import urllib.request
 
 GITHUB_API = 'https://api.github.com/graphql'
 DEFAULT_PORT = 9712
 DEFAULT_OAUTH_TOKEN = os.environ.get('GITHUB_OAUTH_TOKEN')
 DEFAULT_CLONE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'repos')
+DEFAULT_SYNC_INTERVAL = 3  # seconds
 
 # meta repo name => repo topics (repos with these topics will be contained in the meta-repo)
 REPOS = {
@@ -199,12 +203,29 @@ def sync_metarepo(clone_dir, name, submodules):
         logging.info('Meta repository %s requires no changes', name)
 
 
-def handle_event(args, payload):
+def handle_events(args, event_queue):
+    # wait for an event
+    event_queue.get()
+
+    # discard any other piled up events
+    while not event_queue.empty():
+        try:
+            event_queue.get(blocking=False)
+        except queue.Empty:
+            continue
+        event_queue.task_done()
+
+    # update the meta repos
     repos = list_repos(args.token)
     repos_by_topic = group_repos_by_topic(repos)
-    for name, topics in REPOS.items():
-        submodules = repos_for_topics(repos_by_topic, topics)
-        sync_metarepo(args.dir, name, submodules)
+    with concurrent.futures.ThreadPoolExecutor() as pool:
+        for name, topics in REPOS.items():
+            submodules = repos_for_topics(repos_by_topic, topics)
+            pool.submit(sync_metarepo, args.dir, name, submodules)
+
+    # mark as complete and schedule next handler
+    event_queue.task_done()
+    threading.Timer(args.sync_interval, handle_events, [args, event_queue]).start()
 
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
@@ -215,7 +236,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             logging.debug('Recieved payload:\n%s', pprint.pformat(payload, indent=2))
             event = self.headers['X-Github-Event']
             if event in {'push', 'repository'}:
-                handle_event(self.server.args, payload)
+                self.server.event_queue.put(payload)
                 self.send_response(200)
             else:
                 logging.warn('Ignoring %s event', event)
@@ -228,9 +249,10 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
 
 class PortReuseTCPServer(socketserver.TCPServer):
-    def __init__(self, cli_args, *args, **kwargs):
+    def __init__(self, cli_args, event_queue, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.args = cli_args
+        self.event_queue = event_queue
 
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -239,8 +261,10 @@ class PortReuseTCPServer(socketserver.TCPServer):
 
 def start_server(args):
     global httpd
-    httpd = PortReuseTCPServer(args, ('', args.port), RequestHandler)
     logging.info('Starting server on port %d', args.port)
+    event_queue = queue.Queue()
+    httpd = PortReuseTCPServer(args, event_queue, ('', args.port), RequestHandler)
+    threading.Timer(args.sync_interval, handle_events, [args, event_queue]).start()
     httpd.serve_forever()
 
 
@@ -256,6 +280,7 @@ def main():
     parser.add_argument('--repo', '-r', help='meta-repo to sync (required with sync action)')
     parser.add_argument('--port', '-p', type=int, help='server port (default: {})'.format(DEFAULT_PORT), default=DEFAULT_PORT)
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
+    parser.add_argument('--sync-interval', '-i', help='min interval between syncs (default: {}s)'.format(DEFAULT_SYNC_INTERVAL), default=DEFAULT_SYNC_INTERVAL)
     args = parser.parse_args()
 
     levels = [logging.WARNING, logging.INFO, logging.DEBUG]

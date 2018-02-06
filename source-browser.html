@@ -84,12 +84,12 @@
     <script type="text/javascript">
       const ORGANIZATION = 'mock-apertium',
             TOPICS = [
-              {topic: 'apertium-languages', name: 'languages', repoUrl: 'https://github.com/mock-apertium/apertium-languages'},
-              {topic: 'apertium-trunk', name: 'trunk'},
-              {topic: 'apertium-staging', name: 'staging', repoUrl: 'https://github.com/mock-apertium/apertium-staging'},
-              {topic: 'apertium-nursery', name: 'nursery'},
-              {topic: 'apertium-incubator', name: 'incubator'},
-              {topic: 'apertium-tools', name: 'tools', repoUrl: 'https://github.com/mock-apertium/apertium-tools'},
+              {topic: 'apertium-languages', name: 'languages', repoUrl: `https://github.com/${ORGANIZATION}/apertium-languages`},
+              {topic: 'apertium-trunk', name: 'trunk', repoUrl: `https://github.com/${ORGANIZATION}/apertium-trunk`},
+              {topic: 'apertium-staging', name: 'staging', repoUrl: `https://github.com/${ORGANIZATION}/apertium-staging`},
+              {topic: 'apertium-nursery', name: 'nursery', repoUrl: `https://github.com/${ORGANIZATION}/apertium-nursery`},
+              {topic: 'apertium-incubator', name: 'incubator', repoUrl: `https://github.com/${ORGANIZATION}/apertium-incubator`},
+              {topic: 'apertium-tools', name: 'tools', repoUrl: `https://github.com/${ORGANIZATION}/apertium-tools`},
             ];
 
       function getTopicData(topic, organization) {

@@ -24,11 +24,11 @@ set_repo_topics () {
 }
 
 import_repo () {
-    $CWD/../subgit-3.2.6/bin/subgit configure \
+    ./subgit-3.2.6/bin/subgit configure \
         --layout directory \
         --svn-url $1
-    cp $CWD/../authors.txt $2.git/subgit/authors.txt
-    $CWD/../subgit-3.2.6/bin/subgit install $2.git
+    cp ./authors.txt $2.git/subgit/authors.txt
+    ./subgit-3.2.6/bin/subgit install $2.git
 }
 
 push_bare_repo () {

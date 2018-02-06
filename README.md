@@ -48,15 +48,27 @@ automatically via [`sync.py`][5].
 
 ### Scripts
 
-These scripts rely on [SubGit][6] and use the `authors.txt` file to convert
+These scripts rely on [SubGit][6] being present in the current (top) directory
+and use the `authors.txt` file to convert
 SVN users to GitHub emails to establish connections between commits and
 GitHub accounts. Utility functions are located in `util.sh`.
 
-- `import-repo.sh [svn-url] [github-repo-name] [github-topic]` will import a
-  single repo from SVN to GitHub.
-- `import-modules.sh` imports all language pairs and modules from SVN to Github.
-- `create-metarepos.sh` creates all the mono-repositories and syncs the submodules
+- `import-repo.sh "svn-url" "github-repo-name" "[github-topic-1, github-topic-2, ...]"`
+  will import the SVN repo at `svn-url` to GitHub with the name
+  `github-repo-name` and the given (possibly only one) topics.
+- `import-modules.sh` imports all language pairs, modules, and the Apertium core
+  from SVN to Github.
+- `create-metarepos.sh` creates all the mono-repos and syncs the submodules
   that are created by `import-modules.sh`.
+
+For the actual migration, an owner of the [apertium GitHub organization][2]
+needs to:
+1. create a [GitHub OAuth token][7] with 'repo' permissions
+1. set the environment variable `GITHUB_OAUTH_TOKEN` with the token above
+1. download and unzip [SubGit][6] in the current directory
+1. edit line 5 with their own GitHub username, and line 6 with `apertium`
+1. run `./import-modules.sh`
+1. run `./create-metarepos.sh`
 
 - TODO: svn propset script
 
@@ -119,3 +131,4 @@ only modern browsers are supported. It is made available via
 [4]: https://github.com/blog/2191-pin-repositories-to-your-github-profile
 [5]: https://github.com/sushain97/apertium-on-github/blob/master/sync.py
 [6]: https://subgit.com/
+[7]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/

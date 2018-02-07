@@ -62,6 +62,7 @@ GitHub accounts. Utility functions are located in `util.sh`.
 
 For the actual migration, an owner of the [apertium GitHub organization][2]
 needs to:
+
 1. Create a [GitHub OAuth token][7] with 'repo' permissions.
 1. Run `export GITHUB_OAUTH_TOKEN=<token from above>` to set the environment variable.
 1. Download and unzip [SubGit][6] in the current directory.

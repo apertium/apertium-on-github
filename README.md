@@ -118,13 +118,13 @@ only modern browsers are supported. It is made available via
 
 ## Helpful Git Commands
 
-- Remember, [`git svn`](https://git-scm.com/book/en/v1/Git-and-Other-Systems-Git-and-Subversion) is always an option and offers an bona fide SVN experience.
-- Kernel.org's [Git for SVN users cheatsheet](https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf).
+- Remember, GitHub has a [Subversion bridge][8] that makes it possible to use SVN to work with any of the non meta repositories.
+- Kernel.org's [Git for SVN users cheatsheet][9].
 - Meta repository commands
   - To checkout a meta repository, use `git clone --recursive -j8 [url]`.
   - To pull (update) a meta repository, use `git pull --recurse-submodules`. Never use `git submodule update`, you will get conflicts with the sync script's pushes.
   - To push changes to submodules within a meta repository, use `git submodule foreach git push`.
-- Use Git [alias](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases) for any oft used commands.
+- Use Git [alias][10] for any oft used commands.
 
 [1]: https://help.github.com/articles/permission-levels-for-an-organization/
 [2]: https://github.com/orgs/apertium/
@@ -133,3 +133,6 @@ only modern browsers are supported. It is made available via
 [5]: https://github.com/sushain97/apertium-on-github/blob/master/sync.py
 [6]: https://subgit.com/
 [7]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+[8]: https://help.github.com/articles/support-for-subversion-clients/
+[9]: https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf
+[10]: https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases

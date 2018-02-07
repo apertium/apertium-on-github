@@ -32,37 +32,42 @@ import textwrap
 import threading
 import urllib.request
 
+# Each element of this list is a dict from meta repo name to its topics.
+# Each meta repo will sync as submodules any repo with at least one of its topics.
+# The meta repos within a dict are updated in parallel but each dict is updated in serial.
+# Therefore, meta repo B dependent on meta repo A should come in a dict after one with A.
+# Each meta repo will be synced on any Push/Repository event unless the event is associated
+# directly with any repo in its dict.
+METAREPOS = [
+    {
+        'apertium-incubator': {'apertium-incubator'},
+        'apertium-languages': {'apertium-languages'},
+        'apertium-nursery': {'apertium-nursery'},
+        'apertium-staging': {'apertium-staging'},
+        'apertium-tools': {'apertium-tools'},
+        'apertium-trunk': {'apertium-trunk'},
+    },
+    {
+        'apertium-all': {'apertium-core', 'apertium-all'},
+    },
+]
+ORGANIZATION = 'mock-apertium'
 GITHUB_API = 'https://api.github.com/graphql'
+
 DEFAULT_PORT = 9712
 DEFAULT_OAUTH_TOKEN = os.environ.get('GITHUB_OAUTH_TOKEN')
 DEFAULT_CLONE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'repos')
 DEFAULT_SYNC_INTERVAL = 3  # seconds
 
-# meta repo name => repo topics (repos with these topics will be contained in the meta-repo)
-REPOS = {
-    'apertium-all': {
-        'apertium-core',
-        'apertium-all',
-    },
-    'apertium-incubator': {'apertium-incubator'},
-    'apertium-languages': {'apertium-languages'},
-    'apertium-nursery': {'apertium-nursery'},
-    'apertium-staging': {'apertium-staging'},
-    'apertium-tools': {'apertium-tools'},
-    'apertium-trunk': {'apertium-trunk'},
-}
-ORGANIZATION = 'mock-apertium'
-
-
-httpd = None
+server = None
 
 
 def close_socket():
-    global httpd
-    if httpd:
+    global server
+    if server:
         logging.info('Stopping server')
-        httpd.server_close()
-        httpd = None
+        server.server_close()
+        server = None
         sys.exit(0)
 
 
@@ -204,31 +209,6 @@ def sync_metarepo(clone_dir, name, submodules):
         logging.info('Meta repository %s requires no changes', name)
 
 
-def handle_events(args, event_queue):
-    # wait for an event
-    event_queue.get()
-    logging.info('Starting meta repository update')
-
-    # discard any other piled up events
-    while not event_queue.empty():
-        with contextlib.suppress(queue.Empty):
-            event_queue.get_nowait()
-            event_queue.task_done()
-
-    # update the meta repos and block until completion
-    repos = list_repos(args.token)
-    repos_by_topic = group_repos_by_topic(repos)
-    with concurrent.futures.ThreadPoolExecutor() as pool:
-        for name, topics in REPOS.items():
-            submodules = repos_for_topics(repos_by_topic, topics)
-            pool.submit(sync_metarepo, args.dir, name, submodules)
-
-    # mark as complete and schedule next handler
-    event_queue.task_done()
-    logging.info('Scheduling next meta repository update')
-    threading.Timer(args.sync_interval, handle_events, [args, event_queue]).start()
-
-
 class RequestHandler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         try:
@@ -249,24 +229,53 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
 
 
-class PortReuseTCPServer(socketserver.TCPServer):
+class Server(socketserver.TCPServer):
     def __init__(self, cli_args, event_queue, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.args = cli_args
         self.event_queue = event_queue
+        self.event_handler_timer = threading.Timer(self.args.sync_interval, self.handle_events)
+        self.event_handler_timer.start()
+
+    def handle_events(self):
+        # wait for an event
+        self.event_queue.get()
+        logging.info('Starting meta repository update')
+
+        # discard any other piled up events
+        while not self.event_queue.empty():
+            with contextlib.suppress(queue.Empty):
+                self.event_queue.get_nowait()
+                self.event_queue.task_done()
+
+        # update the meta repos and block until completion
+        repos = list_repos(self.args.token)
+        repos_by_topic = group_repos_by_topic(repos)
+        for metarepos in METAREPOS.topics():
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                for name, topics in metarepos.items():
+                    submodules = repos_for_topics(repos_by_topic, topics)
+                    pool.submit(sync_metarepo, self.args.dir, name, submodules)
+
+        # mark as complete and schedule next handler
+        self.event_queue.task_done()
+        logging.info('Scheduling next meta repository update')
+        self.event_handler_timer = threading.Timer(self.args.sync_interval, self.handle_events).start()
 
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(self.server_address)
 
+    def server_close(self):
+        self.event_handler_timer.cancel()
+
 
 def start_server(args):
-    global httpd
+    global server
     logging.info('Starting server on port %d', args.port)
     event_queue = queue.Queue()
-    httpd = PortReuseTCPServer(args, event_queue, ('', args.port), RequestHandler)
-    threading.Timer(args.sync_interval, handle_events, [args, event_queue]).start()
-    httpd.serve_forever()
+    server = Server(args, event_queue, ('', args.port), RequestHandler)
+    server.serve_forever()
 
 
 def main():
@@ -278,7 +287,7 @@ def main():
     )
     parser.add_argument('--verbose', '-v', action='count', help='add verbosity (maximum -vv)', default=0)
     parser.add_argument('--dir', '-d', help='directory to clone meta repos', default=DEFAULT_CLONE_DIR)
-    parser.add_argument('--repo', '-r', help='meta-repo to sync (required with sync action)')
+    parser.add_argument('--repo', '-r', help='meta-repo to sync (required with sync action)', choices=list(collections.ChainMap(*METAREPOS).keys()))
     parser.add_argument('--port', '-p', type=int, help='server port (default: {})'.format(DEFAULT_PORT), default=DEFAULT_PORT)
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
     parser.add_argument('--sync-interval', '-i', help='min interval between syncs (default: {}s)'.format(DEFAULT_SYNC_INTERVAL), default=DEFAULT_SYNC_INTERVAL)
@@ -299,7 +308,7 @@ def main():
             raise argparse.ArgumentError('--repo required with sync action')
         repos = list_repos(args.token)
         repos_by_topic = group_repos_by_topic(repos)
-        topics = REPOS[args.repo]
+        topics = collections.ChainMap(*METAREPOS)[args.repo]
         submodules = repos_for_topics(repos_by_topic, topics)
         sync_metarepo(args.dir, args.repo, submodules)
 

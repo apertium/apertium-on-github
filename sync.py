@@ -168,12 +168,14 @@ def sync_metarepo(clone_dir, name, submodules):
     logging.info('Meta repository %s saw %d updated submodules', name, len(submodule_changeset))
 
     # Add / Remove Submodules
-    submodule_list_output = subprocess.check_output(
-        shlex.split('git config --file .gitmodules --name-only --get-regexp path'),
-        cwd=metarepo_dir,
-        universal_newlines=True,
-    )
-    submodules_present = set(map(lambda line: line.split('.')[1], submodule_list_output.splitlines()))
+    submodules_present = set()
+    if os.path.exists(os.path.join(metarepo_dir, '.gitmodules')):
+        submodule_list_output = subprocess.check_output(
+            shlex.split('git config --file .gitmodules --name-only --get-regexp path'),
+            cwd=metarepo_dir,
+            universal_newlines=True,
+        )
+        submodules_present = set(map(lambda line: line.split('.')[1], submodule_list_output.splitlines()))
     submodules_missing = submodules - submodules_present
     submodules_extra = submodules_present - submodules
     logging.info('Meta repository %s has extra submodules %s and missing submodules %s', name, submodules_extra, submodules_missing)

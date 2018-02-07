@@ -16,6 +16,18 @@ create_repo () {
             -d "{\"name\":\"$1\"}"
 }
 
+init_repo () {
+    git clone git@github.com:$ORG/$1.git
+    (
+        cd $1
+        echo "# $1" > README.md
+        git add README.md
+        git diff-index --quiet HEAD || git commit -m "Initial commit"
+        git push
+    )
+    rm -rf $1
+}
+
 set_repo_topics () {
     curl -s -S -X PUT https://api.github.com/repos/$ORG/$1/topics \
         -u $USER:$GITHUB_OAUTH_TOKEN \

@@ -146,69 +146,95 @@ def repos_for_topics(repos_by_topic, topics):
     return functools.reduce(operator.or_, map(lambda topic: set(repos_by_topic[topic]), topics))
 
 
-def sync_metarepo(clone_dir, name, submodules):
-    # Clone
-    logging.info('Updating meta repository %s with %d submodules', name, len(submodules))
-    if not os.path.isdir(os.path.join(clone_dir, name)):
-        logging.info('Cloning meta repository %s', name)
-        subprocess.check_call(shlex.split('git clone --recursive --jobs 8 git@github.com:{}/{}.git'.format(ORGANIZATION, name)), cwd=clone_dir)
-    else:
-        logging.debug('Meta repository %s already cloned', name)
+class MetaRepoSyncer:
+    def __init__(self, clone_dir, name, submodules):
+        self.clone_dir = clone_dir
+        self.name = name
+        self.submodules = submodules
+        self.dir = os.path.join(clone_dir, name)
+        self.check_call = functools.partial(subprocess.check_call, cwd=self.dir)
 
-    # Update
-    logging.info('Updating meta repository %s', name)
-    metarepo_dir = os.path.join(clone_dir, name)
-    metarepo_check_call = functools.partial(subprocess.check_call, cwd=metarepo_dir)
-    metarepo_check_call(shlex.split('git pull --ff-only'))
-    metarepo_check_call(shlex.split('git submodule update --jobs 8 --remote'))
-    changeset = subprocess.check_output(shlex.split('git diff --name-only'), cwd=metarepo_dir, universal_newlines=True).splitlines()
-    logging.debug('Changeset is: %s', changeset)
-    submodule_changeset = list(filter(lambda change: change in submodules, changeset))
-    logging.debug('Submodule changeset is: %s', submodule_changeset)
-    logging.info('Meta repository %s saw %d updated submodules', name, len(submodule_changeset))
+    def clone(self):
+        if not os.path.isdir(os.path.join(self.clone_dir, self.name)):
+            logging.info('Cloning meta repository %s', self.name)
+            subprocess.check_call(shlex.split('git clone --recursive --jobs 8 git@github.com:{}/{}.git'.format(ORGANIZATION, self.name)), cwd=self.clone_dir)
+        else:
+            logging.debug('Meta repository %s already cloned', self.name)
 
-    # Add / Remove Submodules
-    submodules_present = set()
-    if os.path.exists(os.path.join(metarepo_dir, '.gitmodules')):
-        submodule_list_output = subprocess.check_output(
-            shlex.split('git config --file .gitmodules --name-only --get-regexp path'),
-            cwd=metarepo_dir,
-            universal_newlines=True,
-        )
-        submodules_present = set(map(lambda line: line.split('.')[1], submodule_list_output.splitlines()))
-    submodules_missing = submodules - submodules_present
-    submodules_extra = submodules_present - submodules
-    logging.info('Meta repository %s has extra submodules %s and missing submodules %s', name, submodules_extra, submodules_missing)
+    def update(self):
+        logging.info('Updating meta repository %s', self.name)
+        self.check_call(shlex.split('git pull --rebase'))
+        self.check_call(shlex.split('git submodule update --jobs 8 --remote'))
+        changeset = subprocess.check_output(shlex.split('git diff --name-only'), cwd=self.dir, universal_newlines=True).splitlines()
+        logging.debug('Changeset is: %s', changeset)
+        submodule_changeset = list(filter(lambda change: change in self.submodules, changeset))
+        logging.debug('Submodule changeset is: %s', submodule_changeset)
+        logging.info('Meta repository %s has %d updated submodules', self.name, len(submodule_changeset))
+        return submodule_changeset
 
-    for submodule in submodules_extra:
-        logging.debug('Removing submodule %s from meta repository %s', submodule, name)
-        metarepo_check_call(shlex.split('git submodule deinit --force {}'.format(submodule)))
-        metarepo_check_call(shlex.split('rm -rf .git/modules/{}'.format(submodule)))
-        metarepo_check_call(shlex.split('git rm --force {}'.format(submodule)))
+    def add_remove_submodules(self):
+        submodules_present = set()
+        if os.path.exists(os.path.join(self.dir, '.gitmodules')):
+            submodule_list_output = subprocess.check_output(
+                shlex.split('git config --file .gitmodules --name-only --get-regexp path'),
+                cwd=self.dir,
+                universal_newlines=True,
+            )
+            submodules_present = set(map(lambda line: line.split('.')[1], submodule_list_output.splitlines()))
+        submodules_missing = self.submodules - self._present
+        submodules_extra = submodules_present - self.submodules
+        logging.info('Meta repository %s has extra submodules %s and missing submodules %s', self.name, submodules_extra, submodules_missing)
 
-    for submodule in submodules_missing:
-        logging.debug('Adding submodule %s to meta repository %s', submodule, name)
-        metarepo_check_call(shlex.split('git submodule add --branch master git@github.com:{}/{}.git'.format(ORGANIZATION, submodule)))
+        for submodule in submodules_extra:
+            logging.debug('Removing submodule %s from meta repository %s', submodule, self.name)
+            self.check_call(shlex.split('git submodule deinit --force {}'.format(submodule)))
+            self.check_call(shlex.split('rm -rf .git/modules/{}'.format(submodule)))
+            self.check_call(shlex.split('git rm --force {}'.format(submodule)))
 
-    # Commit and Push
-    clean = subprocess.call(shlex.split('git diff-index --quiet HEAD --'), cwd=metarepo_dir) == 0
-    if not clean:
-        logging.info('Pushing changes to meta repository %s', name)
-        commit_message = textwrap.dedent('''
-            Sync submodules
-            Updated: {}.
-            Deleted: {}.
-            Added: {}.
-        '''.format(
-            ', '.join(submodule_changeset) or 'None',
-            ', '.join(submodules_extra) or 'None',
-            ', '.join(submodules_missing) or 'None',
-        ))
-        logging.debug('Meta repository %s commit message: %s', name, commit_message)
-        metarepo_check_call(shlex.split('git commit --all --message "{}"'.format(commit_message)))
-        metarepo_check_call(shlex.split('git push'))
-    else:
-        logging.info('Meta repository %s requires no changes', name)
+        for submodule in submodules_missing:
+            logging.debug('Adding submodule %s to meta repository %s', submodule, self.name)
+            self.check_call(shlex.split('git submodule add --branch master git@github.com:{}/{}.git'.format(ORGANIZATION, submodule)))
+
+        return submodules_extra, submodules_missing
+
+    def commit(self, submodule_changeset, submodules_extra, submodules_missing):
+        clean = subprocess.call(shlex.split('git diff-index --quiet HEAD --'), cwd=self.dir) == 0
+        if not clean:
+            logging.info('Pushing changes to meta repository %s', self.name)
+            commit_message = textwrap.dedent('''
+                Sync submodules
+                Updated: {}.
+                Deleted: {}.
+                Added: {}.
+            '''.format(
+                ', '.join(submodule_changeset) or 'None',
+                ', '.join(submodules_extra) or 'None',
+                ', '.join(submodules_missing) or 'None',
+            ))
+            logging.debug('Meta repository %s commit message: %s', self.name, commit_message)
+            self.check_call(shlex.split('git commit --all --message "{}"'.format(commit_message)))
+        else:
+            logging.info('Meta repository %s requires no changes', self.name)
+
+    def push(self):
+        self.check_call(shlex.split('git push'))
+
+    def sync(self):
+        submodule_changeset, submodules_extra, submodules_missing = None, None
+        self.clone()
+
+        try:
+            submodule_changeset = self.update()
+            submodules_extra, submodules_missing = self.add_remove_submodules()
+            self.commit(submodule_changeset, submodules_extra, submodules_missing)
+            self.push()
+        except subprocess.CalledProcessError as error:
+            logging.warning('Updating meta repository %s failed, trying add/remove submodules first: %s', self.name, error, exc_info=True)
+            submodules_extra, submodules_missing = self.add_remove_submodules()
+            self.commit([], submodules_extra, submodules_missing)
+            submodule_changeset = self.update()
+            self.commit(submodule_changeset, [], [])
+            self.push()
 
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
@@ -268,7 +294,7 @@ class Server(socketserver.TCPServer):
                 with concurrent.futures.ThreadPoolExecutor() as pool:
                     for name, topics in metarepo_group.items():
                         submodules = repos_for_topics(repos_by_topic, topics)
-                        pool.submit(sync_metarepo, self.args.dir, name, submodules)
+                        pool.submit(MetaRepoSyncer(self.args.dir, name, submodules).sync)
             else:
                 logging.debug('Ignoring events for meta repository group %d', i)
 
@@ -324,7 +350,7 @@ def main():
         repos_by_topic = group_repos_by_topic(repos)
         topics = collections.ChainMap(*METAREPOS)[args.repo]
         submodules = repos_for_topics(repos_by_topic, topics)
-        sync_metarepo(args.dir, args.repo, submodules)
+        MetaRepoSyncer(args.dir, args.repo, submodules).sync()
 
 
 if __name__ == '__main__':

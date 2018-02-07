@@ -237,7 +237,7 @@ class Server(socketserver.TCPServer):
         self.schedule_event_handler()
 
     def schedule_event_handler(self):
-        logging.info('Scheduling next meta repository update')
+        logging.info('Scheduling next event handler')
         self.event_handler_timer = threading.Timer(self.args.sync_interval, self.handle_events)
         self.event_handler_timer.daemon = True
         self.event_handler_timer.start()
@@ -245,7 +245,7 @@ class Server(socketserver.TCPServer):
     def handle_events(self):
         # wait for an event
         self.event_queue.get()
-        logging.info('Starting meta repository update')
+        logging.info('Starting meta repository sync')
 
         # discard any other piled up events
         while not self.event_queue.empty():
@@ -253,7 +253,7 @@ class Server(socketserver.TCPServer):
                 self.event_queue.get_nowait()
                 self.event_queue.task_done()
 
-        # update the meta repos and block until completion
+        # sync the meta repos and block until completion
         repos = list_repos(self.args.token)
         repos_by_topic = group_repos_by_topic(repos)
         for metarepo_group in METAREPOS:

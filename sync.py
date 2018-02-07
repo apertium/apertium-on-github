@@ -34,7 +34,7 @@ import urllib.request
 
 # Each element of this list is a dict from meta repo name to its topics.
 # Each meta repo will sync as submodules any repo with at least one of its topics.
-# The meta repos within a dict are updated in parallel but each dict is updated in serial.
+# The meta repos within a dict are synced in parallel but each dict is synced in serial.
 # Therefore, meta repo B dependent on meta repo A should come in a dict after one with A.
 # Each meta repo will be synced on any Push/Repository event unless the event is associated
 # directly with any repo in its dict.
@@ -237,12 +237,13 @@ class Server(socketserver.TCPServer):
         self.schedule_event_handler()
 
     def schedule_event_handler(self):
-        logging.info('Scheduling next event handler')
+        logging.debug('Scheduling next event handler')
         self.event_handler_timer = threading.Timer(self.args.sync_interval, self.handle_events)
         self.event_handler_timer.daemon = True
         self.event_handler_timer.start()
 
     def handle_events(self):
+        logging.info('Waiting for an event')
         # wait for an event
         self.event_queue.get()
         logging.info('Starting meta repository sync')

@@ -49,7 +49,7 @@ automatically via [`sync.py`][5].
 ### Scripts
 
 These scripts rely on [SubGit][6] being present in the current (top) directory
-and use the `authors.txt` file to convert
+and use the `svn_authors.txt` file to convert
 SVN users to GitHub emails to establish connections between commits and
 GitHub accounts. Utility functions are located in `util.sh`.
 

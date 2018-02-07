@@ -39,7 +39,7 @@ import_repo () {
     ./subgit-3.2.6/bin/subgit configure \
         --layout directory \
         --svn-url $1
-    cp ./authors.txt $2.git/subgit/authors.txt
+    cp ./svn_authors.txt $2.git/subgit/authors.txt
     ./subgit-3.2.6/bin/subgit install $2.git
 }
 

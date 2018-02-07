@@ -256,7 +256,7 @@ class Server(socketserver.TCPServer):
         # update the meta repos and block until completion
         repos = list_repos(self.args.token)
         repos_by_topic = group_repos_by_topic(repos)
-        for metarepos in METAREPOS.topics():
+        for metarepos in METAREPOS:
             with concurrent.futures.ThreadPoolExecutor() as pool:
                 for name, topics in metarepos.items():
                     submodules = repos_for_topics(repos_by_topic, topics)

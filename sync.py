@@ -234,7 +234,12 @@ class Server(socketserver.TCPServer):
         super().__init__(*args, **kwargs)
         self.args = cli_args
         self.event_queue = event_queue
+        self.schedule_event_handler()
+
+    def schedule_event_handler(self):
+        logging.info('Scheduling next meta repository update')
         self.event_handler_timer = threading.Timer(self.args.sync_interval, self.handle_events)
+        self.event_handler_timer.daemon = True
         self.event_handler_timer.start()
 
     def handle_events(self):
@@ -259,9 +264,7 @@ class Server(socketserver.TCPServer):
 
         # mark as complete and schedule next handler
         self.event_queue.task_done()
-        logging.info('Scheduling next meta repository update')
-        self.event_handler_timer = threading.Timer(self.args.sync_interval, self.handle_events)
-        self.event_handler_timer.start()
+        self.schedule_event_handler()
 
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

@@ -37,7 +37,7 @@ import urllib.request
 # The meta repos within a dict are synced in parallel but each dict is synced in serial.
 # Therefore, meta repo B dependent on meta repo A should come in a dict after one with A.
 # Each meta repo will be synced on any Push/Repository event unless the event is associated
-# directly with any repo in its dict.
+# directly with any repo in its dict or a dict after it.
 METAREPOS = [
     {
         'apertium-incubator': {'apertium-incubator'},
@@ -204,7 +204,7 @@ def sync_metarepo(clone_dir, name, submodules):
             ', '.join(submodules_extra) or 'None',
             ', '.join(submodules_missing) or 'None',
         ))
-        logging.debug('Meta repository %s commit message:\n%s', name, pprint.pformat(commit_message, indent=2))
+        logging.debug('Meta repository %s commit message: %s', name, commit_message)
         metarepo_check_call(shlex.split('git commit --all --message "{}"'.format(commit_message)))
         metarepo_check_call(shlex.split('git push'))
     else:
@@ -246,26 +246,32 @@ class Server(socketserver.TCPServer):
 
     def handle_events(self):
         logging.info('Waiting for an event')
-        # wait for an event
-        self.event_queue.get()
-        logging.info('Starting meta repository sync')
+        events = []
+        events.append(self.event_queue.get())
 
-        # discard any other piled up events
         while not self.event_queue.empty():
             with contextlib.suppress(queue.Empty):
-                self.event_queue.get_nowait()
+                events.append(self.event_queue.get_nowait())
                 self.event_queue.task_done()
 
-        # sync the meta repos and block until completion
+        affected_repos = set(map(lambda event: event['repository']['name'], events))
+        logging.debug('Got %d events representing %d repositories: %s', len(events), len(affected_repos), affected_repos)
+
+        logging.info('Starting meta repository sync')
         repos = list_repos(self.args.token)
         repos_by_topic = group_repos_by_topic(repos)
-        for metarepo_group in METAREPOS:
-            with concurrent.futures.ThreadPoolExecutor() as pool:
-                for name, topics in metarepo_group.items():
-                    submodules = repos_for_topics(repos_by_topic, topics)
-                    pool.submit(sync_metarepo, self.args.dir, name, submodules)
+        for i, metarepo_group in enumerate(METAREPOS):
+            later_metarepos = set(sum(list(map(lambda group: list(group.keys()), METAREPOS[i + 1:])), []))
+            relevant_affected_repos = affected_repos - (later_metarepos | set(metarepo_group.keys()))
+            if relevant_affected_repos:
+                logging.debug('Relevant affected repositories for group %d are: %s', i, relevant_affected_repos)
+                with concurrent.futures.ThreadPoolExecutor() as pool:
+                    for name, topics in metarepo_group.items():
+                        submodules = repos_for_topics(repos_by_topic, topics)
+                        pool.submit(sync_metarepo, self.args.dir, name, submodules)
+            else:
+                logging.debug('Ignoring events for meta repository group %d', i)
 
-        # mark as complete and schedule next handler
         self.event_queue.task_done()
         self.schedule_event_handler()
 

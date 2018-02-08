@@ -118,14 +118,19 @@ The source for this interface is `source-browser.html`. For the sake of simplici
 only modern browsers are supported. It is made available via
 [GH pages](https://sushain97.github.io/apertium-on-github/source-browser.html).
 
-## Helpful Git Commands
+## Git Tips
 
 - Remember, GitHub has a [Subversion bridge][8] that makes it possible to use SVN to work with any of the non meta repositories.
 - Kernel.org's [Git for SVN users cheatsheet][9].
-- Meta repository commands
+- Meta repositories
+  - Don't push updated submodules to a meta repository, let `sync.py` handle it.
   - To checkout a meta repository, use `git clone --recursive -j8 [url]`.
-  - To pull (update) a meta repository, use `git pull --recurse-submodules`. Never use `git submodule update`, you will get conflicts with the sync script's pushes.
+  - To pull (update) a meta repository, use `git pull --recurse-submodules`.
+    Never use `git submodule update`, you will get conflicts with the sync script's pushes.
+  - To commit changes to all submodules within a meta repository, use `git submodule foreach 'git commit -m "my message"'`.
+    Add the `-a` flag to add unstaged files. If some submodules aren't dirty, use `git commit -m "my message" || true`.
   - To push changes to submodules within a meta repository, use `git submodule foreach git push`.
+
 - Use Git [alias][10] for any oft used commands.
 
 [1]: https://help.github.com/articles/permission-levels-for-an-organization/

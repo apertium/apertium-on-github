@@ -81,21 +81,23 @@ needs to:
 
 Usage:
 
-    usage: sync.py [-h] [--verbose] [--dir DIR] [--repo REPO] [--port PORT]
-                  [--token TOKEN] [--sync-interval SYNC_INTERVAL]
-                  {startserver,sync}
+    usage: sync.py [-h] [--verbose] [--dir DIR]
+                  [--repo {apertium-languages,apertium-nursery,apertium-staging,apertium-incubator,apertium-all,apertium-trunk,apertium-tools}]
+                  [--port PORT] [--token TOKEN] [--sync-interval SYNC_INTERVAL]
+                  {sync,startserver}
 
     Sync Apertium meta repositories.
 
     positional arguments:
-      {startserver,sync}    use "startserver" to start the server and "sync --repo
+      {sync,startserver}    use "startserver" to start the server and "sync --repo
                             [name]" to force a meta-repo sync
 
     optional arguments:
       -h, --help            show this help message and exit
       --verbose, -v         add verbosity (maximum -vv)
       --dir DIR, -d DIR     directory to clone meta repos
-      --repo REPO, -r REPO  meta-repo to sync (required with sync action)
+      --repo {apertium-languages,apertium-nursery,apertium-staging,apertium-incubator,apertium-all,apertium-trunk,apertium-tools}, -r {apertium-languages,apertium-nursery,apertium-staging,apertium-incubator,apertium-all,apertium-trunk,apertium-tools}
+                            meta-repo to sync (default: all)
       --port PORT, -p PORT  server port (default: 9712)
       --token TOKEN, -t TOKEN
                             GitHub OAuth token

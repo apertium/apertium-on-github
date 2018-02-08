@@ -356,7 +356,7 @@ def main():
     )
     parser.add_argument('--verbose', '-v', action='count', help='add verbosity (maximum -vv)', default=0)
     parser.add_argument('--dir', '-d', help='directory to clone meta repos', default=DEFAULT_CLONE_DIR)
-    parser.add_argument('--repo', '-r', help='meta-repo to sync (required with sync action)', choices=list(collections.ChainMap(*METAREPOS).keys()))
+    parser.add_argument('--repo', '-r', help='meta-repo to sync (default: all)', choices=list(collections.ChainMap(*METAREPOS).keys()))
     parser.add_argument('--port', '-p', type=int, help='server port (default: {})'.format(DEFAULT_PORT), default=DEFAULT_PORT)
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
     parser.add_argument('--sync-interval', '-i', help='min interval between syncs (default: {}s)'.format(DEFAULT_SYNC_INTERVAL), default=DEFAULT_SYNC_INTERVAL)
@@ -373,13 +373,17 @@ def main():
     if args.action == 'startserver':
         start_server(args)
     elif args.action == 'sync':
-        if not args.repo:
-            raise argparse.ArgumentError('--repo required with sync action')
         repos = list_repos(args.token)
         repos_by_topic = group_repos_by_topic(repos)
-        topics = collections.ChainMap(*METAREPOS)[args.repo]
-        submodules = repos_for_topics(repos_by_topic, topics)
-        MetaRepoSyncer(args.dir, args.repo, submodules).sync()
+        if args.repo:
+            topics = collections.ChainMap(*METAREPOS)[args.repo]
+            submodules = repos_for_topics(repos_by_topic, topics)
+            MetaRepoSyncer(args.dir, args.repo, submodules).sync()
+        else:
+            for metarepo_group in METAREPOS:
+                for name, topics in metarepo_group.items():
+                    submodules = repos_for_topics(repos_by_topic, topics)
+                    MetaRepoSyncer(args.dir, name, submodules).sync()
 
 
 if __name__ == '__main__':

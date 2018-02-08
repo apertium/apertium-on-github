@@ -157,7 +157,8 @@ class MetaRepoSyncer:
     def clone(self):
         if not os.path.isdir(os.path.join(self.clone_dir, self.name)):
             logging.info('Cloning meta repository %s', self.name)
-            subprocess.check_call(shlex.split('git clone --recursive --jobs 8 git@github.com:{}/{}.git'.format(ORGANIZATION, self.name)), cwd=self.clone_dir)
+            subprocess.check_call(shlex.split('git clone git@github.com:{}/{}.git'.format(ORGANIZATION, self.name)), cwd=self.clone_dir)
+            self.check_call(shlex.split('git submodule update --init --jobs 8'))
         else:
             logging.debug('Meta repository %s already cloned', self.name)
 
@@ -180,7 +181,7 @@ class MetaRepoSyncer:
                 universal_newlines=True,
             )
             submodules_present = set(map(lambda line: line.split('.')[1], submodule_list_output.splitlines()))
-        submodules_missing = self.submodules - self._present
+        submodules_missing = self.submodules - submodules_present
         submodules_extra = submodules_present - self.submodules
         logging.info('Meta repository %s has extra submodules %s and missing submodules %s', self.name, submodules_extra, submodules_missing)
 
@@ -220,7 +221,7 @@ class MetaRepoSyncer:
 
     def sync(self):
         logging.info('Syncing meta repository %s', self.name)
-        submodule_changeset, submodules_extra, submodules_missing = None, None
+        submodule_changeset, submodules_extra, submodules_missing = None, None, None
         self.clone()
 
         try:

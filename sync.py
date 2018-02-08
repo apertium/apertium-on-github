@@ -162,7 +162,6 @@ class MetaRepoSyncer:
             logging.debug('Meta repository %s already cloned', self.name)
 
     def update(self):
-        logging.info('Updating meta repository %s', self.name)
         self.check_call(shlex.split('git pull --rebase'))
         self.check_call(shlex.split('git submodule update --jobs 8 --remote'))
         changeset = subprocess.check_output(shlex.split('git diff --name-only'), cwd=self.dir, universal_newlines=True).splitlines()
@@ -220,6 +219,7 @@ class MetaRepoSyncer:
         self.check_call(shlex.split('git push'))
 
     def sync(self):
+        logging.info('Syncing meta repository %s', self.name)
         submodule_changeset, submodules_extra, submodules_missing = None, None
         self.clone()
 
@@ -229,7 +229,7 @@ class MetaRepoSyncer:
             self.commit(submodule_changeset, submodules_extra, submodules_missing)
             self.push()
         except subprocess.CalledProcessError as error:
-            logging.warning('Updating meta repository %s failed, trying add/remove submodules first: %s', self.name, error, exc_info=True)
+            logging.warning('Syncing meta repository %s failed, trying add/remove submodules first: %s', self.name, error, exc_info=True)
             submodules_extra, submodules_missing = self.add_remove_submodules()
             self.commit([], submodules_extra, submodules_missing)
             submodule_changeset = self.update()

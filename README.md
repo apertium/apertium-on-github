@@ -128,7 +128,7 @@ only modern browsers are supported. It is made available via
   - To pull (update) a meta repository, use `git pull --recurse-submodules`.
     Never use `git submodule update`, you will get conflicts with the sync script's pushes.
   - To commit changes to all submodules within a meta repository, use `git submodule foreach 'git commit -m "my message"'`.
-    Add the `-a` flag to add unstaged files. If some submodules aren't dirty, use `git commit -m "my message" || true`.
+    Add the `-a` flag to add unstaged files. If some submodules are dirty, use `git commit -m "my message" || true`.
   - To push changes to submodules within a meta repository, use `git submodule foreach git push`.
 
 - Use Git [alias][10] for any oft used commands.

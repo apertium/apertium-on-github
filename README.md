@@ -130,7 +130,6 @@ only modern browsers are supported. It is made available via
   - To commit changes to all submodules within a meta repository, use `git submodule foreach 'git commit -m "my message"'`.
     Add the `-a` flag to add unstaged files. If some submodules are dirty, use `git commit -m "my message" || true`.
   - To push changes to submodules within a meta repository, use `git submodule foreach git push`.
-
 - Use Git [alias][10] for any oft used commands.
 
 [1]: https://help.github.com/articles/permission-levels-for-an-organization/

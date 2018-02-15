@@ -67,10 +67,11 @@ needs to:
 1. Run `export GITHUB_OAUTH_TOKEN=<token from above>` to set the environment variable.
 1. Download and unzip [SubGit][6] in the current directory.
 1. Edit line 5 of `util.sh` with their own GitHub username and line 6 with `apertium`.
+1. Freeze the SVN repository.
 1. Run `./import-modules.sh`.
 1. Run `./create-metarepos.sh`.
-
-- TODO: svn propset script
+1. Pin meta repositories.
+1. Add contributors.
 
 ## Maintenance
 

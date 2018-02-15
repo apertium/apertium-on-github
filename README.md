@@ -29,7 +29,7 @@ Initially,
 
 - All package repositories (pairs/languages/tools) will belong to the [apertium GitHub organization][2]. 
 - Members of the PMC will be `owners` of this organization.
-- All other Apertium contributors will be `members`. The PMC can make someone a member
+- All other Apertium contributors will be `members`. The PMC can make someone a `member`
   of the organization with a majority vote.
 
 The permissions associated with these roles are described [in detail][1]. 

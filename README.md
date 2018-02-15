@@ -31,7 +31,7 @@ Initially,
 - Members of the PMC will be `owners` of this organization.
 - All other Apertium contributors will be `members`. A member of the PMC can make someone a `member`
   of the organization after they commit code as an outside collaborator or via pull request and are 
-  then sponsored by two existing committers.
+  then sponsored by two existing committers. This is analogous to giving commit access in SVN.
 
 The permissions associated with these roles are described [in detail][1]. 
 

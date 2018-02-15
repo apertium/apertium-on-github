@@ -23,19 +23,40 @@ See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_pr
 
 ### Organization
 
-When created, all package repositories (pairs/languages/tools) will belong to
-the [apertium GitHub organization][2]. Members of the PMC will be 'owners' of
-this organization and all other Apertium contributors will be 'members', with
-[these permissions][1].
+#### Members
+
+Initially,
+
+- All package repositories (pairs/languages/tools) will belong to the [apertium GitHub organization][2]. 
+- Members of the PMC will be `owners` of this organization.
+- All other Apertium contributors will be `members`. The PMC can make someone a member
+  of the organization with a majority vote.
+
+The permissions associated with these roles are described [in detail][1]. 
+
+`TODO.sh` will invite all the non-SourceForge emails in `svn-authors.txt` 
+to the organization as members. For technical reasons, surrounding [rate limits][11],
+this script should be run a few days prior to repository migration.
+
+#### Repositories
+
+##### Permissions
 
 Each repository will have the following [permission levels][3]:
 
-- 'owner': (same for all packages) PMC members
-- 'admin': (package-specific) one or more 'package maintainers' who will merge
-           pull requests, change continuous integration settings, etc.
-- 'write': (package-specific) Apertium contributors who have been given commit
-           access
-- 'read': (same for all packages) any GitHub user
+- `owner`: (**same for all repositories**) PMC members (same as the organization `owners`). Can do anything.
+- `admin`: (**repository-specific**) Organization `members` that serve as 'package maintainers'. The PMC can 
+  designate a `member` of the organization as an `admin` with a majority vote. Of particular relevance to 
+  Apertium are the following permissions they have in addition to `write` permissions:
+  - manage repository settings
+  - delete the repository
+  - add/delete outside collaborators (people with `write` access who are not Apertium `members`)
+  - manage topics (including moving from e.g. staging to trunk)
+- `write`: (**repository-specific**) Organization `members` that can commit to the repository. Any PMC
+  member can give a `member` of the organization `write` permission to a repository.
+- `read`: (**same for all packages**) any GitHub user since our repositories are all public
+
+##### Meta Repositories
 
 The meta-repositories `apertium-all`, `apertium-tools`, `apertium-staging`,
 `apertium-nursery`, `apertium-incubator`, and `apertium-trunk` should be
@@ -46,7 +67,7 @@ Note that nobody should have write permissions for these meta-repositories,
 except owners of course. Their contents will, for the most part, be updated
 automatically via [`sync.py`][5].
 
-### Scripts
+#### Scripts
 
 These scripts rely on [SubGit][6] being present in the current (top) directory
 and use the `svn_authors.txt` file to convert
@@ -60,6 +81,8 @@ GitHub accounts. Utility functions are located in `util.sh`.
   from SVN to Github.
 - `create-metarepos.sh` creates all the mono-repos and syncs their submodules
 
+#### Migration
+
 For the actual migration, an owner of the [apertium GitHub organization][2]
 needs to:
 
@@ -71,7 +94,6 @@ needs to:
 1. Run `./import-modules.sh`.
 1. Run `./create-metarepos.sh`.
 1. Pin meta repositories.
-1. Add contributors.
 
 ## Maintenance
 
@@ -143,3 +165,4 @@ only modern browsers are supported. It is made available via
 [8]: https://help.github.com/articles/support-for-subversion-clients/
 [9]: https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf
 [10]: https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases
+[11]: https://developer.github.com/v3/repos/collaborators/#rate-limits

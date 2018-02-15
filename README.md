@@ -29,8 +29,8 @@ Initially,
 
 - All package repositories (pairs/languages/tools) will belong to the [apertium GitHub organization][2]. 
 - Members of the PMC will be `owners` of this organization.
-- All other Apertium contributors will be `members`. The PMC can make someone a `member`
-  of the organization with a majority vote.
+- All other Apertium contributors will be `members`. A member of the PMC can make someone a `member`
+  of the organization after they commit code and are sponsored by two existing committers.
 
 The permissions associated with these roles are described [in detail][1]. 
 
@@ -45,9 +45,9 @@ this script should be run a few days prior to repository migration.
 Each repository will have the following [permission levels][3]:
 
 - `owner`: (**same for all repositories**) PMC members (same as the organization `owners`). Can do anything.
-- `admin`: (**repository-specific**) Organization `members` that serve as 'package maintainers'. The PMC can 
-  designate a `member` of the organization as an `admin` with a majority vote. Of particular relevance to 
-  Apertium are the following permissions they have in addition to `write` permissions:
+- `admin`: (**repository-specific**) Organization `members` that serve as 'package maintainers'. A PMC member
+  can designate a `member` of the organization as an `admin`. Of particular relevance to Apertium are the following     
+  permissions they have in addition to `write` permissions:
   - manage repository settings
   - delete the repository
   - add/delete outside collaborators (people with `write` access who are not Apertium `members`)

@@ -54,7 +54,7 @@ Each repository will have the following [permission levels][3]:
   - manage topics (including moving from e.g. staging to trunk)
 - `write`: (**repository-specific**) Organization `members` that can commit to the repository. Any PMC
   member can give a `member` of the organization `write` permission to a repository.
-- `read`: (**same for all packages**) any GitHub user since our repositories are all public
+- `read`: (**same for all repositories**) any GitHub user since our repositories are all public
 
 ##### Meta Repositories
 

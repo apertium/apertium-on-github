@@ -1,17 +1,20 @@
 #!/bin/sh
 
-set -x -u -e
+set -x -u -e -a
 
+MAX_PROCS=8
+SVN_ROOT='https://svn.code.sf.net/p/apertium/svn'
+GITHUB_API='$GITHUB_API'
 USER='sushain97'
 ORG='mock-apertium'
 LANG_RE='\w{2,3}(_\w+)?'
 
 delete_repo () {
-    curl -X DELETE https://api.github.com/repos/$ORG/$1 -u $USER:$GITHUB_OAUTH_TOKEN
+    curl -X DELETE $GITHUB_API/repos/$ORG/$1 -u $USER:$GITHUB_OAUTH_TOKEN
 }
 
 create_repo () {
-    curl -s -S -X POST https://api.github.com/orgs/$ORG/repos \
+    curl -s -S -X POST $GITHUB_API/orgs/$ORG/repos \
             -u $USER:$GITHUB_OAUTH_TOKEN \
             -d "{\"name\":\"$1\"}"
 }
@@ -29,7 +32,7 @@ init_repo () {
 }
 
 set_repo_topics () {
-    curl -s -S -X PUT https://api.github.com/repos/$ORG/$1/topics \
+    curl -s -S -X PUT $GITHUB_API/repos/$ORG/$1/topics \
         -u $USER:$GITHUB_OAUTH_TOKEN \
         -d "{\"names\":$2}" \
         -H "Accept:application/vnd.github.mercy-preview+json"

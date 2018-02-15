@@ -1,15 +1,15 @@
 #!/bin/sh
 source util.sh
 
-# setup the remainder
+create_metarepo () {
+    create_repo "apertium-$1"
+    set_repo_topics "apertium-$1" '["apertium-all"]'
+    init_repo "apertium-$1"
+    ./sync.py sync --repo "apertium-$1"
+}
+
 metarepos=(staging nursery incubator trunk languages tools)
-for repo in "${metarepos[@]}"
-do
-    create_repo "apertium-$repo"
-    set_repo_topics "apertium-$repo" '["apertium-all"]'
-    init_repo "apertium-$repo"
-    ./sync.py sync --repo "apertium-$repo"
-done
+printf "%s\n" "${metarepos[@]}" | xargs -n 1 -P $MAX_PROCS -I {} bash -c 'create_metarepo "{}"'
 
 # setup apertium-all
 create_repo "apertium-all"

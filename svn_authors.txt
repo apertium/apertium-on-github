@@ -168,7 +168,7 @@ mginesti = Mireia Ginestí Rosell <mireia.ginesti@gmail.com>
 mie = Tommi Pirinen <flammie@iki.fi>
 miinasus = Miina Seurujärvi <miina.seurujarvi@samediggi.fi>
 misoss = Misoss <misoss@users.sourceforge.net>
-"missmaryx" : "missmaryx <missmaryx@users.sourceforge.net>",
+missmaryx = missmaryx <missmaryx@users.sourceforge.net>
 mkrist = Michael Kristensen <mkrist88@gmail.com>
 mlforcada = Mikel L. Forcada <mlf@dlsi.ua.es>
 moshagen = Sjur Nørstebø Moshagen <sjur.n.moshagen@uit.no>

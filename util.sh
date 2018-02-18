@@ -1,10 +1,11 @@
 #!/bin/sh
 
 set -x -u -e -a
+export SHELLOPTS
 
 MAX_PROCS=8
 SVN_ROOT='https://svn.code.sf.net/p/apertium/svn'
-GITHUB_API='$GITHUB_API'
+GITHUB_API='https://api.github.com'
 USER='sushain97'
 ORG='mock-apertium'
 LANG_RE='\w{2,3}(_\w+)?'

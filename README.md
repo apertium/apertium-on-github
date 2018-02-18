@@ -37,11 +37,11 @@ Initially,
 
 The permissions associated with these roles are described [in detail][1].
 
-`TODO.sh` will invite all the non-SourceForge emails in `svn-authors.txt`
-to the organization as members. For technical reasons, surrounding [rate limits][11],
-this script should be run a few days prior to repository migration when `TODO2.sh`
-will give members of the organization `write` access to repositories they have
-committed to in the past.
+`invite-members.sh` will invite all the non-SourceForge emails in `svn-authors.txt`
+to the organization as members. For technical reasons, surrounding [rate limits][11]
+and caching[12], this script should be run a few days prior to repository migration
+when `TODO2.sh` will give members of the organization `write` access to repositories
+they have committed to in the past.
 
 #### Repositories
 
@@ -97,8 +97,8 @@ needs to:
 1. Run `export GITHUB_OAUTH_TOKEN=<token from above>` to set the environment variable.
 1. Download and unzip [SubGit][6] in the current directory.
 1. Edit line 5 of `util.sh` with their own GitHub username and line 6 with `apertium`.
+1. Run `./invite-members.sh`. Wait for some time to allow people to accept invitations.
 1. Freeze the SVN repository.
-1. Run `./invite-members.sh`.
 1. Run `./import-modules.sh`.
 1. Run `./create-metarepos.sh`.
 1. Pin meta repositories.
@@ -174,3 +174,4 @@ only modern browsers are supported. It is made available via
 [9]: https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf
 [10]: https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases
 [11]: https://developer.github.com/v3/repos/collaborators/#rate-limits
+[12]: https://developer.github.com/v3/repos/#list-contributors

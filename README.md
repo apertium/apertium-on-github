@@ -84,7 +84,7 @@ GitHub accounts. Utility functions are located in `util.sh`.
   `github-repo-name` and the given (possibly only one) topics.
 - `import-modules.sh` imports all language pairs, modules, and the Apertium core
   from SVN to Github.
-- `create-metarepos.sh` creates all the mono-repos and syncs their submodules
+- `create-metarepos.sh` creates all the meta repos and syncs their submodules
 
 #### Migration
 

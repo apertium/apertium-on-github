@@ -27,17 +27,17 @@ See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_pr
 
 Initially,
 
-- All package repositories (pairs/languages/tools) will belong to the [apertium GitHub organization][2]. 
+- All package repositories (pairs/languages/tools) will belong to the [apertium GitHub organization][2].
 - Members of the PMC will be `owners` of this organization.
 - All other Apertium contributors will be `members`. A member of the PMC can make someone a `member`
-  of the organization after they commit code as an outside collaborator or via pull request and are 
+  of the organization after they commit code as an outside collaborator or via pull request and are
   then sponsored by two existing committers. This is not analogous to giving commit access in SVN
   since non-members of the organization can easily contribute code with pull requests or as an outside
   collaborator.
 
-The permissions associated with these roles are described [in detail][1]. 
+The permissions associated with these roles are described [in detail][1].
 
-`TODO.sh` will invite all the non-SourceForge emails in `svn-authors.txt` 
+`TODO.sh` will invite all the non-SourceForge emails in `svn-authors.txt`
 to the organization as members. For technical reasons, surrounding [rate limits][11],
 this script should be run a few days prior to repository migration when `TODO2.sh`
 will give members of the organization `write` access to repositories they have
@@ -51,7 +51,7 @@ Each repository will have the following [permission levels][3]:
 
 - `owner`: (**same for all repositories**) PMC members (same as the organization `owners`). Can do anything.
 - `admin`: (**repository-specific**) Organization `members` that serve as 'package maintainers'. A PMC member
-  can designate a `member` of the organization as an `admin`. Of particular relevance to Apertium are the following     
+  can designate a `member` of the organization as an `admin`. Of particular relevance to Apertium are the following
   permissions they have in addition to `write` permissions:
   - manage repository settings
   - delete the repository
@@ -85,6 +85,8 @@ GitHub accounts. Utility functions are located in `util.sh`.
 - `import-modules.sh` imports all language pairs, modules, and the Apertium core
   from SVN to Github.
 - `create-metarepos.sh` creates all the meta repos and syncs their submodules
+- `invite-members.sh` invites non-SourceForge emails from `svn_authors.txt` to the
+  GitHub organization
 
 #### Migration
 
@@ -96,6 +98,7 @@ needs to:
 1. Download and unzip [SubGit][6] in the current directory.
 1. Edit line 5 of `util.sh` with their own GitHub username and line 6 with `apertium`.
 1. Freeze the SVN repository.
+1. Run `./invite-members.sh`.
 1. Run `./import-modules.sh`.
 1. Run `./create-metarepos.sh`.
 1. Pin meta repositories.

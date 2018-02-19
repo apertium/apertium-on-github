@@ -39,7 +39,7 @@ The permissions associated with these roles are described [in detail][1].
 
 `invite-members.sh` will invite all the non-SourceForge emails in `svn-authors.txt`
 to the organization as members. For technical reasons, surrounding [rate limits][11]
-and caching[12], this script should be run a few days prior to repository migration
+and [caching][12], this script should be run a few days prior to repository migration
 when `TODO2.sh` will give members of the organization `write` access to repositories
 they have committed to in the past.
 
@@ -56,6 +56,7 @@ Each repository will have the following [permission levels][3]:
   - manage repository settings
   - delete the repository
   - add/delete outside collaborators (people with `write` access who are not Apertium `members`)
+  - give other contributors `admin` access
   - manage topics (including moving from e.g. staging to trunk)
 - `write`: (**repository-specific**) Organization `members` that can commit to the repository. Any PMC
   member can give a `member` of the organization `write` permission to a repository.

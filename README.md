@@ -39,7 +39,7 @@ The permissions associated with these roles are described [in detail][1].
 
 `invite-members.sh` will invite all the non-SourceForge emails in `svn-authors.txt`
 to the organization as members. For technical reasons, surrounding [rate limits][11]
-and caching[12], this script should be run a few days prior to repository migration
+and [caching][12], this script should be run a few days prior to repository migration
 when `TODO2.sh` will give members of the organization `write` access to repositories
 they have committed to in the past.
 

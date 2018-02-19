@@ -70,7 +70,8 @@ As an organization member, Shardul can:
 
 **Note**: Shardul's write access to repositories has *not changed* and so far, he only has write
 access to `apertium/apertium-tur`. For other repositories, he can either follow
-steps 1 and 2 again, or Fran can directly give him write access.
+steps 1 and 2 again and receive access from other maintainers like Ilnar, or
+(rarely) Fran can directly give him write access.
 
 
 ### How `apertium/apertium-tur` is released
@@ -83,6 +84,9 @@ steps 1 and 2 again, or Fran can directly give him write access.
 Now the release will show up publicly on the `apertium/apertium-tur` releases
 page and Sushain will be able (through the API) to view download counts for the
 release.
+
+Technically, Sushain has the permissions to publish the release by himself, but
+the [by-laws][2] say that releases must be approved by the PMC.
 
 
 ### How `apertium/apertium-tur` is managed

@@ -56,6 +56,7 @@ Each repository will have the following [permission levels][3]:
   - manage repository settings
   - delete the repository
   - add/delete outside collaborators (people with `write` access who are not Apertium `members`)
+  - give other contributors `admin` access
   - manage topics (including moving from e.g. staging to trunk)
 - `write`: (**repository-specific**) Organization `members` that can commit to the repository. Any PMC
   member can give a `member` of the organization `write` permission to a repository.

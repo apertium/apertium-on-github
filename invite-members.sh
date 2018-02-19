@@ -9,4 +9,4 @@ invite () {
             -H "Accept:application/vnd.github.dazzler-preview+json"
 }
 
-sed 's/^.*<\(.*\)>/\1/' svn_authors.txt | grep -v '@users.sourceforge.net' | xargs -n 1 -I {} bash -c 'invite "{}"'
+sed 's/^.*<\(.*\)>/\1/' svn-authors.txt | grep -v '@users.sourceforge.net' | xargs -n 1 -I {} bash -c 'invite "{}"'

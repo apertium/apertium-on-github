@@ -98,7 +98,7 @@ or the issue tracker.
 Note that this process does not involve Pam at all.
 
 
-  [1]: https://github.com/sushain97/apertium-on-github/blob/master/README.md
+  [1]: https://github.com/sushain97/apertium-on-github#organization
   [2]: http://wiki.apertium.org/wiki/By-laws
   [3]: https://help.github.com/articles/about-teams/
   [4]: https://help.github.com/articles/about-project-boards/

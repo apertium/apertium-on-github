@@ -16,7 +16,6 @@ do
     if [ -z "${new_repos}" ]; then
         break
     fi
-    break
 done
 
 for repo in "${repos[@]}"

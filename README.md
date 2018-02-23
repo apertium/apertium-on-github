@@ -40,8 +40,8 @@ The permissions associated with these roles are described [in detail][1].
 `invite-members.sh` will invite all the non-SourceForge emails in `svn-authors.txt`
 to the organization as members. For technical reasons, surrounding [rate limits][11]
 and [caching][12], this script should be run a few days prior to repository migration
-when `TODO2.sh` will give members of the organization `write` access to repositories
-they have committed to in the past.
+when `add-contributors.sh` will give members of the organization `write` access to
+repositories they have committed to in the past.
 
 #### Repositories
 
@@ -88,6 +88,8 @@ GitHub accounts. Utility functions are located in `util.sh`.
 - `create-metarepos.sh` creates all the meta repos and syncs their submodules
 - `invite-members.sh` invites non-SourceForge emails from `svn-authors.txt` to the
   GitHub organization
+- `add-contributors.sh` grants push permissions for each repository to those GitHub
+  users who have previously contributed to the repo
 
 #### Migration
 
@@ -101,7 +103,8 @@ needs to:
 1. Run `./invite-members.sh`. Wait for some time to allow people to accept invitations.
 1. Freeze the SVN repository.
 1. Run `./import-modules.sh`.
-1. Run `./create-metarepos.sh`.
+1. Run `./create-metarepos.sh`. Wait for ~two hours to allow GitHub to sync contributors.
+1. Run `./add-contributors.sh`.
 1. Pin meta repositories.
 
 ## Maintenance

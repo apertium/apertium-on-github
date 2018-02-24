@@ -114,7 +114,7 @@ def _list_repos(token, after=None):
           }''') % (ORGANIZATION, (', after: "{}"'.format(after) if after else ''))
     }).encode("utf-8")
     request = urllib.request.Request(GITHUB_API, data=request_data, headers=headers)
-    response = urllib.request.urlopen(request).read()
+    response = urllib.request.urlopen(request).read().decode('utf-8')
     data = json.loads(response)['data']
     repos = data['organization']['repositories']
     if repos['pageInfo']['hasNextPage']:

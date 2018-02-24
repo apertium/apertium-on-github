@@ -3,6 +3,7 @@
 set -x -u -e -a
 export SHELLOPTS
 
+SUBGIT=./subgit-3.2.6/bin/subgit
 MAX_PROCS=8
 SVN_ROOT='https://svn.code.sf.net/p/apertium/svn'
 GITHUB_API='https://api.github.com'
@@ -40,11 +41,11 @@ set_repo_topics () {
 }
 
 import_repo () {
-    ./subgit-3.2.6/bin/subgit configure \
+    $SUBGIT configure \
         --layout directory \
         --svn-url $1
     cp ./svn-authors.txt $2.git/subgit/authors.txt
-    ./subgit-3.2.6/bin/subgit install $2.git
+    $SUBGIT import $2.git
 }
 
 push_bare_repo () {

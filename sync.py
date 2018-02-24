@@ -159,7 +159,7 @@ class MetaRepoSyncer:
         if not os.path.isdir(os.path.join(self.clone_dir, self.name)):
             logging.info('Cloning meta repository %s', self.name)
             subprocess.check_call(shlex.split('git clone git@github.com:{}/{}.git'.format(ORGANIZATION, self.name)), cwd=self.clone_dir)
-            if init_submodules:
+            if init_submodules and self._has_submodules():
                 self.check_call(shlex.split('git submodule update --init --jobs 8'))
         else:
             logging.debug('Meta repository %s already cloned', self.name)
@@ -175,7 +175,7 @@ class MetaRepoSyncer:
         return submodule_changeset
 
     def list_submodules_present(self):
-        if os.path.exists(os.path.join(self.dir, '.gitmodules')):
+        if self._has_submodules():
             submodule_list_output = subprocess.check_output(
                 shlex.split('git config --file .gitmodules --name-only --get-regexp path'),
                 cwd=self.dir,
@@ -225,6 +225,9 @@ class MetaRepoSyncer:
     def nuke(self):
         logging.debug('Nuking meta repository %s', self.name)
         shutil.rmtree(self.dir)
+
+    def _has_submodules(self):
+        return os.path.exists(os.path.join(self.dir, '.gitmodules'))
 
     def _sync_with_invalid_submodules(self):
         self.nuke()

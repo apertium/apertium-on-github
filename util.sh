@@ -55,10 +55,22 @@ push_bare_repo () {
     )
 }
 
+exists_repo () {
+    curl -s -S $GITHUB_API/repos/$ORG/$1 \
+        -u $USER:$GITHUB_OAUTH_TOKEN \
+        -w "%{http_code}" \
+        -o /dev/null
+}
+
 import_create_and_push_repo () {
-    import_repo $1 $2
-    create_repo $2
-    push_bare_repo $2
-    set_repo_topics $2 $3
-    rm -rf $2.git/
+    if [[ $( exists_repo $2 ) == '200' ]]
+    then
+        echo "$2 already exists in $ORG";
+    else
+        import_repo $1 $2
+        create_repo $2
+        push_bare_repo $2
+        set_repo_topics $2 $3
+        rm -rf $2.git/
+    fi
 }

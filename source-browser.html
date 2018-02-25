@@ -11,9 +11,6 @@
     <link rel="stylesheet" href="//unpkg.com/basscss@8.0.2/css/basscss.min.css" integrity="sha384-CgFx5HOpkvxp0HXaZonaM1zF0p1KIaZXpQn4vyc7ggBrSoQ0CKuh5ZcPLFYWRD5+" crossorigin="anonymous">
     <link defer rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <style type="text/css">
-      .repo {
-        font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      }
       #logo {
         max-height: 3em;
       }
@@ -22,7 +19,7 @@
         max-height: 4.75em;
       }
       .topic {
-        min-width: 200px;
+        min-width: 215px;
       }
     </style>
   </head>
@@ -91,32 +88,35 @@
         const reposByTopic = await getReposByTopic(ORGANIZATION);
 
         TOPICS.forEach(({topic, name, repoUrl}) => {
-          const topicColumn = $('<div class="topic flex-auto">'),
-                repoList = $('<ul class="repos list-reset mt0">');
-          topicColumn.append(
-            $('<div>').append(
-              $('<h2 class="inline-block m0">').text(name),
-              repoUrl ? $('<a class="ml1"><i class="fa fa-external-link"></i></a>').attr({
-                href: repoUrl,
-                target: '_blank',
-              }) : undefined
-            ),
-            $('<hr class="my1 m0 col-10">'),
-            repoList,
+          const repoList = $('<ul class="repos list-reset mt0">');
+
+          $("#topics").append(
+            $('<div class="topic flex-auto">').append(
+              $('<div>').append(
+                $('<h2 class="inline-block m0">').text(name),
+                repoUrl && $('<a class="ml1"><i class="fa fa-external-link"></i></a>').attr({
+                  href: repoUrl,
+                  target: '_blank',
+                }),
+              ),
+              $('<hr class="my1 m0 col-10">'),
+              repoList,
+            )
           );
-          $("#topics").append(topicColumn);
 
           const repos = reposByTopic[topic] || [];
           repos.sort((a, b) => a.name.localeCompare(b.name));
           repos.forEach(repo =>
             repoList.append(
               $('<li class="repo">').append(
-                $('<a>').text(repo.name).attr({
+                $('<a>').append(
+                  $('<code class="p0 h4">').text(repo.name)
+                ).attr({
                   href: repo.html_url,
                   target: '_blank',
                 }),
-              )
-            )
+              ),
+            ),
           );
         });
       }

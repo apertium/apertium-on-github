@@ -312,26 +312,29 @@ class Server(socketserver.TCPServer):
                 events.append(self.event_queue.get_nowait())
                 self.event_queue.task_done()
 
-        affected_repos = set(map(lambda event: event['repository']['name'], events))
-        logging.debug('Got %d events representing %d repositories: %s', len(events), len(affected_repos), affected_repos)
+        try:
+            affected_repos = set(map(lambda event: event['repository']['name'], events))
+            logging.debug('Got %d events representing %d repositories: %s', len(events), len(affected_repos), affected_repos)
 
-        logging.info('Starting meta repository sync')
-        repos = list_repos(self.args.token)
-        repos_by_topic = group_repos_by_topic(repos)
-        for i, metarepo_group in enumerate(METAREPOS):
-            later_metarepos = set(sum(list(map(lambda group: list(group.keys()), METAREPOS[i + 1:])), []))
-            relevant_affected_repos = affected_repos - (later_metarepos | set(metarepo_group.keys()))
-            if relevant_affected_repos:
-                logging.debug('Relevant affected repositories for group %d are: %s', i, relevant_affected_repos)
-                with concurrent.futures.ThreadPoolExecutor() as pool:
-                    for name, topics in metarepo_group.items():
-                        submodules = repos_for_topics(repos_by_topic, topics)
-                        pool.submit(MetaRepoSyncer(self.args.dir, name, submodules).sync)
-            else:
-                logging.debug('Ignoring events for meta repository group %d', i)
-
-        self.event_queue.task_done()
-        self.schedule_event_handler()
+            logging.info('Starting meta repository sync')
+            repos = list_repos(self.args.token)
+            repos_by_topic = group_repos_by_topic(repos)
+            for i, metarepo_group in enumerate(METAREPOS):
+                later_metarepos = set(sum(list(map(lambda group: list(group.keys()), METAREPOS[i + 1:])), []))
+                relevant_affected_repos = affected_repos - (later_metarepos | set(metarepo_group.keys()))
+                if relevant_affected_repos:
+                    logging.debug('Relevant affected repositories for group %d are: %s', i, relevant_affected_repos)
+                    with concurrent.futures.ThreadPoolExecutor() as pool:
+                        for name, topics in metarepo_group.items():
+                            submodules = repos_for_topics(repos_by_topic, topics)
+                            pool.submit(MetaRepoSyncer(self.args.dir, name, submodules).sync)
+                else:
+                    logging.debug('Ignoring events for meta repository group %d', i)
+        except Exception as error:
+            logging.error('Error while handling events %s', error, exc_info=True)
+        finally:
+            self.event_queue.task_done()
+            self.schedule_event_handler()
 
     def server_bind(self):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

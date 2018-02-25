@@ -273,7 +273,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             length = int(self.headers['Content-Length'])
-            payload = json.loads(self.rfile.read(length))
+            payload = json.loads(self.rfile.read(length).decode('utf-8'))
             logging.debug('Recieved payload:\n%s', pprint.pformat(payload, indent=2))
             event = self.headers['X-Github-Event']
             if event in {'push', 'repository'}:

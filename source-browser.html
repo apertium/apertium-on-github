@@ -7,48 +7,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Sushain K. Cherivirala">
     <link rel="shortcut icon" href="https://www.apertium.org/img/favicon.ico">
-    <link defer rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" integrity="sha256-2k1KVsNPRXxZOsXQ8aqcZ9GOOwmJTMoOB5o5Qp1d6/s=" crossorigin="anonymous">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="//unpkg.com/basscss-basic@1.0.0/index.css" integrity="sha384-mN2Yv5psrWgJNIIir88zPywu45NmWNAFCXcUa0myzdCQbymVU0rn94B+dAy02I9E" crossorigin="anonymous">
+    <link rel="stylesheet" href="//unpkg.com/basscss@8.0.2/css/basscss.min.css" integrity="sha384-CgFx5HOpkvxp0HXaZonaM1zF0p1KIaZXpQn4vyc7ggBrSoQ0CKuh5ZcPLFYWRD5+" crossorigin="anonymous">
+    <link defer rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <style type="text/css">
-      .section {
-        padding-top: 0;
+      .repo {
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       }
       #logo {
-        margin-top: 1em;
         max-height: 3em;
       }
       #github-logo {
-        margin-top: 0.5em;
-        max-height: 5em;
+        margin-top: -1rem;
+        max-height: 4.75em;
       }
       .topic {
         min-width: 200px;
       }
-      .repo {
-        font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      }
-      .topic-repo-link {
-        margin-left: 0.5em;
-      }
-      .topic-divider {
-        width: 90%;
-        margin: 0.5rem 0;
-      }
     </style>
   </head>
-  <body>
-    <section class="section">
-      <a href="https://apertium.org" target="_blank">
-        <img id="logo" src="//www.apertium.org/img/Apertium.png">
-      </a>
-      <a href="#" target="_blank" id="github-link">
-        <img id="github-logo" class="is-hidden-mobile is-pulled-right" src="//assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png">
-      </a>
-      <div id="topics" class="columns is-multiline is-mobile is-variable is-2"></div>
-      <button type="button" class="button is-small" id="refresh">
-        <i class="fa fa-refresh"></i>
-      </button>
-    </section>
+  <body class="m2">
+    <a href="https://apertium.org" target="_blank" class="mt2">
+      <img id="logo" src="//www.apertium.org/img/Apertium.png">
+    </a>
+    <a href="#" target="_blank" id="github-link">
+      <img id="github-logo" class="xs-hide right" src="//assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png">
+    </a>
+    <div id="topics" class="flex flex-wrap col-12 mt1"></div>
+    <button type="button" class="button" id="refresh">
+      <i class="fa fa-refresh"></i>
+    </button>
 
     <script src="//code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script type="text/javascript">
@@ -103,17 +91,17 @@
         const reposByTopic = await getReposByTopic(ORGANIZATION);
 
         TOPICS.forEach(({topic, name, repoUrl}) => {
-          const topicColumn = $('<div class="topic column">'),
-                repoList = $('<ul class="repos">');
+          const topicColumn = $('<div class="topic flex-auto">'),
+                repoList = $('<ul class="repos list-reset mt0">');
           topicColumn.append(
             $('<div>').append(
-              $('<span class="is-size-3">').text(name),
-              repoUrl ? $('<a class="topic-repo-link"><i class="fa fa-external-link"></i></a>').attr({
+              $('<h2 class="inline-block m0">').text(name),
+              repoUrl ? $('<a class="ml1"><i class="fa fa-external-link"></i></a>').attr({
                 href: repoUrl,
                 target: '_blank',
               }) : undefined
             ),
-            $('<hr class="topic-divider">'),
+            $('<hr class="my1 m0 col-10">'),
             repoList,
           );
           $("#topics").append(topicColumn);

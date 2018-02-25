@@ -9,7 +9,6 @@
     <link rel="shortcut icon" href="https://www.apertium.org/img/favicon.ico">
     <link rel="stylesheet" href="//unpkg.com/basscss-basic@1.0.0/index.css" integrity="sha384-mN2Yv5psrWgJNIIir88zPywu45NmWNAFCXcUa0myzdCQbymVU0rn94B+dAy02I9E" crossorigin="anonymous">
     <link rel="stylesheet" href="//unpkg.com/basscss@8.0.2/css/basscss.min.css" integrity="sha384-CgFx5HOpkvxp0HXaZonaM1zF0p1KIaZXpQn4vyc7ggBrSoQ0CKuh5ZcPLFYWRD5+" crossorigin="anonymous">
-    <link defer rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <style type="text/css">
       #logo {
         max-height: 3em;
@@ -21,6 +20,13 @@
       .topic {
         min-width: 215px;
       }
+      #loading {
+        animation: spin 2.5s infinite linear;
+      }
+      @keyframes spin {
+        from {transform:rotate(0deg);}
+        to {transform:rotate(360deg);}
+      }
     </style>
   </head>
   <body class="m2">
@@ -30,10 +36,9 @@
     <a href="#" target="_blank" id="github-link">
       <img id="github-logo" class="xs-hide right" src="//assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png">
     </a>
+    <h1 id="loading" class="m1 center display-none">⌛</h1>
     <div id="topics" class="flex flex-wrap col-12 mt1"></div>
-    <button type="button" class="button" id="refresh">
-      <i class="fa fa-refresh"></i>
-    </button>
+    <a class="fixed right-0 bottom-0 mr2 mb2 text-decoration-none h2" id="refresh" href="#">🔄</a>
 
     <script src="//code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script type="text/javascript">
@@ -85,16 +90,17 @@
       }
 
       async function showTopics() {
+        $('#topics, #loading').toggleClass('display-none');
         const reposByTopic = await getReposByTopic(ORGANIZATION);
 
         TOPICS.forEach(({topic, name, repoUrl}) => {
           const repoList = $('<ul class="repos list-reset mt0">');
 
-          $("#topics").append(
+          $('#topics').append(
             $('<div class="topic flex-auto">').append(
               $('<div>').append(
                 $('<h2 class="inline-block m0">').text(name),
-                repoUrl && $('<a class="ml1"><i class="fa fa-external-link"></i></a>').attr({
+                repoUrl && $('<a class="ml1 text-decoration-none">🔗</a>').attr({
                   href: repoUrl,
                   target: '_blank',
                 }),
@@ -119,6 +125,8 @@
             ),
           );
         });
+
+        $('#topics, #loading').toggleClass('display-none');
       }
 
       function refreshTopics() {

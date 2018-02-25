@@ -220,7 +220,7 @@ class MetaRepoSyncer:
             logging.info('Meta repository %s requires no changes', self.name)
 
     def push(self):
-        self.check_call(shlex.split('git push'))
+        self.check_call(shlex.split('git push --set-upstream origin master'))
 
     def nuke(self):
         logging.debug('Nuking meta repository %s', self.name)

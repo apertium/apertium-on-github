@@ -3,8 +3,8 @@
 set -x -u -e -a
 export SHELLOPTS
 
-SUBGIT=./subgit-3.2.6/bin/subgit
 MAX_PROCS=8
+SUBGIT=./subgit-3.2.6/bin/subgit
 SVN_ROOT='https://svn.code.sf.net/p/apertium/svn'
 GITHUB_API='https://api.github.com'
 USER='sushain97'

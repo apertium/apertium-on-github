@@ -7,80 +7,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Sushain K. Cherivirala">
     <link rel="shortcut icon" href="https://www.apertium.org/img/favicon.ico">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link defer rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" integrity="sha256-2k1KVsNPRXxZOsXQ8aqcZ9GOOwmJTMoOB5o5Qp1d6/s=" crossorigin="anonymous">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <style type="text/css">
+      .section {
+        padding-top: 0;
+      }
       #logo {
         margin-top: 1em;
         max-height: 3em;
       }
       #github-logo {
-        margin-top: .5em;
+        margin-top: 0.5em;
         max-height: 5em;
       }
       #topics {
-        margin-top: 1em;
         flex-wrap: wrap;
       }
       .topic {
-        flex: 1;
         min-width: 200px;
       }
       .repo {
         font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       }
-      .repo i {
-        margin-left: 5px;
-      }
-      .repo-info {
-        cursor: pointer;
-      }
-      .repo-info-term {
-        text-transform: capitalize;
-      }
       .topic-repo-link {
-        margin-left: .5em;
+        margin-left: 0.5em;
       }
       .topic-divider {
         width: 90%;
-        margin: .5rem 0;
+        margin: 0.5rem 0;
       }
     </style>
   </head>
   <body>
-    <div class="container-fluid">
+    <section class="section">
       <a href="https://apertium.org" target="_blank">
         <img id="logo" src="//www.apertium.org/img/Apertium.png">
       </a>
       <a href="#" target="_blank" id="github-link">
-        <img id="github-logo" class="d-none d-sm-block float-right" src="//assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png">
+        <img id="github-logo" class="is-hidden-mobile is-pulled-right" src="//assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png">
       </a>
-      <div id="topics" class="d-flex"></div>
-      <button type="button" class="btn btn-outline-secondary btn-sm text-center" id="refresh">
+      <div id="topics" class="columns is-mobile is-variable is-2"></div>
+      <button type="button" class="button is-small" id="refresh">
         <i class="fa fa-refresh"></i>
       </button>
-    </div>
-
-    <div class="modal fade" tabindex="-1" role="dialog" id="repo-info-modal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title"></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body"><dl></dl></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
 
     <script src="//code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script type="text/javascript">
       const ORGANIZATION = 'mock-apertium',
             CACHE_KEY = 'cache',
@@ -133,11 +106,11 @@
         const reposByTopic = await getReposByTopic(ORGANIZATION);
 
         TOPICS.forEach(({topic, name, repoUrl}) => {
-          const topicColumn = $('<div class="topic">'),
-                repoList = $('<ul class="repos list-unstyled">');
+          const topicColumn = $('<div class="topic column">'),
+                repoList = $('<ul class="repos">');
           topicColumn.append(
             $('<div>').append(
-              $('<h3 class="d-inline">').text(name),
+              $('<span class="is-size-3">').text(name),
               repoUrl ? $('<a class="topic-repo-link"><i class="fa fa-external-link"></i></a>').attr({
                 href: repoUrl,
                 target: '_blank',
@@ -157,41 +130,25 @@
                   href: repo.html_url,
                   target: '_blank',
                 }),
-                $('<i class="fa fa-info-circle repo-info" data-toggle="tooltip">')
-                  .attr('title', repo.description)
-                  .data('repo', repo),
               )
             )
           );
-          $('[data-toggle="tooltip"]', topicColumn).tooltip();
         });
       }
 
-      function showRepoInfo(event) {
-        const repo = $(event.currentTarget).data('repo');
-        $('#repo-info-modal').modal('show');
-        $('#repo-info-modal .modal-title').text(repo.full_name);
-        $('#repo-info-modal .modal-body dl').empty().append(
-          Array.prototype.concat.apply(
-            [],
-            ['description', 'language', 'stargazers_count', 'watchers_count', 'git_url', 'updated_at', 'created_at', 'pushed_at'].map(
-              key => [$('<dt class="repo-info-term">').text(key.replace('_', ' ')), $('<dd>').text(repo[key])],
-            ),
-          )
-        );
-      }
-
-      function refreshTopics(event) {
+      function refreshTopics() {
         localStorage.clear();
         $('.topic').remove();
-        event.currentTarget.blur();
         showTopics();
       }
 
       $(document).ready(() =>  {
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
-        $('#topics').on('click', '.repo-info', showRepoInfo);
-        $('#refresh').click(refreshTopics);
+        $('#refresh').click((event) => {
+          event.currentTarget.blur();
+          refreshTopics();
+        });
+        setInterval(refreshTopics, EXPIRY_MILLIS * 2);
         showTopics();
       });
     </script>

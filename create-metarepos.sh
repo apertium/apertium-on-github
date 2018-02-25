@@ -1,5 +1,6 @@
 #!/bin/sh
 source util.sh
+set +u
 
 create_metarepo () {
     create_repo "apertium-$1"

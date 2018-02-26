@@ -69,7 +69,7 @@
           return fetch(url, {headers});
         }
 
-        let reposByTopic;
+        const reposByTopic = {};
         function _addRepos(repos) {
           repos.forEach(repo => {
             repo.topics.forEach(topic => {
@@ -87,9 +87,11 @@
           _addRepos(await response.json());
           const links = response.headers.get('Link').split(',').map(x => x.split('; '));
           const lastPage = parseInt(links.find((([_, rel]) => rel === 'rel="last"'))[0].match(/page=(\d+)/)[1]);
+
           const remainingPages = [...Array(lastPage + 1).keys()].slice(2);
           const responses = await Promise.all(remainingPages.map(_fetchRepos));
-          responses.map(response => await response.json()).forEach(_addRepos);
+          const reposS = await Promise.all(responses.map(response => response.json()));
+          reposS.forEach(_addRepos);
 
           localStorage[CACHE_KEY] = JSON.stringify(reposByTopic);
           localStorage[EXPIRY_KEY] = Date.now() + EXPIRY_MILLIS;

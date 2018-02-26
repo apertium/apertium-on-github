@@ -69,7 +69,7 @@
           return fetch(url, {headers});
         }
 
-        const reposByTopic = {};
+        let reposByTopic = {};
         function _addRepos(repos) {
           repos.forEach(repo => {
             repo.topics.forEach(topic => {

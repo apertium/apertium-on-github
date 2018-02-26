@@ -61,13 +61,7 @@
             );
 
       async function getReposByTopic(organization) {
-        async function _fetchRepos(page) {
-          const url = `https://api.github.com/orgs/${ORGANIZATION}/repos?page=${page}&per_page=100`;
-          const headers = new Headers({'Accept': 'application/vnd.github.mercy-preview+json'});
-          const data = await fetch(url, {headers});
-          return await data.json();
-        }
-
+        const headers = new Headers({'Accept': 'application/vnd.github.mercy-preview+json'});
         const cacheStale = !(CACHE_KEY in localStorage) || localStorage[EXPIRY_KEY] < Date.now();
 
         let reposByTopic;
@@ -76,10 +70,13 @@
 
           reposByTopic = {};
           let page = 1;
-          let allResultsFetched = false;
-          while (!allResultsFetched) {
-            const repos = await _fetchRepos(page);
-            allResultsFetched = repos.length === 0;
+          let moreResults = true;
+          while (moreResults) {
+            const url = `https://api.github.com/orgs/${ORGANIZATION}/repos?page=${page}&per_page=100`;
+            const response = await fetch(url, {headers});
+            moreResults = response.headers.get('Link').includes('rel="next"');
+
+            const repos = await response.json();
             repos.forEach(repo => {
               repo.topics.forEach(topic => {
                 const repoTopics = reposByTopic[topic] || [];

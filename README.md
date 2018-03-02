@@ -43,6 +43,24 @@ and [caching][12], this script should be run a few days prior to repository migr
 when `add-contributors.sh` will give members of the organization `write` access to
 repositories they have committed to in the past.
 
+##### Teams
+
+Members of the `apertium` organization can organize themselves into `teams`. A
+`team` and its membership can be private or public, but for Apertium, it is
+preferable to have all `teams` public. A `team` can:
+- have a `team` homepage
+- plan projects using GitHub's projects interface
+- be mentioned as '@xyz-team' in discussions
+
+A member of the PMC can grant `write` permissions for specific repositories to
+an entire `team`. Current and future `members` of the `team` will have those
+permissions as long as they are not revoked by a member of the PMC.
+
+Upon request, a member of the PMC can make `members` of a `team` into `team
+maintainers`. The privileges of a `team maintainer` are:
+- adding or removing `members` of the `team`
+- giving or revoking the `team` access to repositories
+
 #### Repositories
 
 ##### Permissions

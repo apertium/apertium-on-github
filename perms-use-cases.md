@@ -102,10 +102,45 @@ or the issue tracker.
 Note that this process does not involve Fran at all.
 
 
-### How a Turkish-language team functions
+### The Turkic-language team
 
-<will add descriptions of how teams work, how they can plan projects, etc. if
-there is interest in organizing `apertium` this way>
+Shardul, Sushain, Ilnar, and many other contributors have started working on
+various Turkic languages. As a group, they would like to discuss Turkic-language
+projects, use planning boards, and let new contributors access all the
+Turkic-language repositories at once. They want to form a [GitHub team][3].
+
+#### How the team is created
+
+1. Shardul creates a team called `turkic-devs` under the `apertium` organization
+and adds all the relevant contributors.
+1. Shardul sends an email to `apertium-stuff` requesting that the `turkic-devs`
+team be given access to `apertium-tur`, `apertium-tat`, etc. As Ilnar is an
+experienced developer for Turkic languages, Shardul also requests that Ilnar be
+made team maintainer.
+1. (optional) Fran removes and adds members of the team.
+1. Fran grants the requested permissions and makes Ilnar the team maintainer.
+
+Now Ilnar can add and remove members of the team and can add or remove the
+team's access to repositories.
+
+#### How the team functions
+
+The `turkic-devs` team has a discussion page. Any organization member of
+`apertium` can participate in discussions with the team. Unless they turn off
+notifications, team members are notified when:
+- a team discussion is started
+- their username is mentioned in a team discussion
+- someone replies to a discussion they have been involved in
+
+In any issues, pull requests, comments, etc. the team can be mentioned as
+`@turkic-devs` and the members will be notified depending on their notification
+settings.
+
+The team can also use [project boards][4] to plan projects. This is not a
+feature specific to teams, but can be an important part of a team's workflow.
+Any contributor with write access to a repository can use project boards for
+that repository, and any organization member of `apertium` can use
+organization-level project boards.
 
 
   [1]: https://github.com/sushain97/apertium-on-github#organization

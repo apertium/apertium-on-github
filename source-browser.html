@@ -8,6 +8,7 @@
     <meta name="author" content="Sushain K. Cherivirala">
     <link rel="shortcut icon" href="https://www.apertium.org/img/favicon.ico">
     <link rel="stylesheet" href="https://unpkg.com/basscss@7.1.1/css/basscss.min.css" integrity="sha384-/biuPsPEkt10QoeOExIADuWNrpFFXALKPgBhEDkRdKDJdQOPpbNU3uUeFbL/KPJg" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hint.css/2.5.0/hint.base.min.css" integrity="sha256-ODFgZG+Y3V10lzZu+7J8epM4SdW0w3p8qbVmmShNrtk=" crossorigin="anonymous">
     <style type="text/css">
       #content {
         margin-top: 85px;
@@ -30,6 +31,12 @@
       }
       a.text-decoration-none:hover {
         text-decoration: none;
+      }
+      [class*="hint--"][aria-label]:after {
+        white-space: normal;
+        line-height: 1.4em;
+        max-width: 200px;
+        width: max-content;
       }
     </style>
   </head>
@@ -113,10 +120,8 @@
             $('<div class="topic flex-auto">').append(
               $('<div>').append(
                 $('<h2 class="inline-block m0">').text(name),
-                repoUrl && $('<a class="ml1 text-decoration-none">🔗</a>').attr({
+                repoUrl && $('<a class="ml1 text-decoration-none" target="_blank" rel="noopener">🔗</a>', {
                   href: repoUrl,
-                  target: '_blank',
-                  rel: 'noopener',
                 }),
               ),
               $('<hr class="mr0 ml0 col-10">'),
@@ -129,13 +134,13 @@
           repos.forEach(repo =>
             repoList.append(
               $('<li class="repo">').append(
-                $('<a>').append(
-                  $('<code class="p0 h4">').text(repo.name)
-                ).attr({
+                $(`<a rel="noopener" target="_blank">`, {
                   href: repo.html_url,
-                  target: '_blank',
-                  rel: 'noopener',
-                }),
+                  class: repo.description ? 'hint--right' : null,
+                  'aria-label': repo.description,
+                }).append(
+                  $('<code class="p0 h4">').text(repo.name)
+                )
               ),
             ),
           );

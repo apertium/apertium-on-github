@@ -60,8 +60,8 @@
     <script type="text/javascript" src="https://unpkg.com/zepto@1.2.0/dist/zepto.js" integrity="sha384-Cp3V2nlfJJ5aA0ctd1PkfNAEMkXM0EGa6RrmEgiv8D6TCaeZJfUFs/PYfR+B5F5H" crossorigin="anonymous"></script>
     <script type="text/javascript">
       const ORGANIZATION = 'apertium',
-            CACHE_KEY = 'cache',
-            EXPIRY_KEY = 'expiry',
+            CACHE_KEY = `${ORGANIZATION}-cache`,
+            EXPIRY_KEY = `${ORGANIZATION}-expiry`,
             EXPIRY_MILLIS = 300000,
             TOPICS = ['languages', 'trunk', 'staging', 'nursery', 'incubator', 'tools'].map(
               topic => ({topic: `apertium-${topic}`, name: topic, repoUrl: `https://github.com/${ORGANIZATION}/apertium-${topic}`})
@@ -92,13 +92,14 @@
 
           const response = await _fetchRepos(1);
           _addRepos(await response.json());
-          const links = response.headers.get('Link').split(',').map(x => x.split('; '));
-          const lastPage = parseInt(links.find((([_, rel]) => rel === 'rel="last"'))[0].match(/page=(\d+)/)[1]);
+          const linkHeader = response.headers.get('Link');
+          const links = linkHeader ? linkHeader.split(',').map(x => x.split('; ')) : [];
+          const lastPage = links.length ? parseInt(links.find((([_, rel]) => rel === 'rel="last"'))[0].match(/page=(\d+)/)[1]) : 1;
 
           const remainingPages = [...Array(lastPage + 1).keys()].slice(2);
           const responses = await Promise.all(remainingPages.map(_fetchRepos));
-          const reposS = await Promise.all(responses.map(response => response.json()));
-          reposS.forEach(_addRepos);
+          const reposs = await Promise.all(responses.map(response => response.json()));
+          reposs.forEach(_addRepos);
 
           localStorage[CACHE_KEY] = JSON.stringify(reposByTopic);
           localStorage[EXPIRY_KEY] = Date.now() + EXPIRY_MILLIS;
@@ -113,7 +114,7 @@
         $('#topics, #loading').toggleClass('display-none');
         const reposByTopic = await getReposByTopic(ORGANIZATION);
 
-        TOPICS.forEach(({topic, name, repoUrl}) => {
+        TOPICS.forEach(({topic, name, repoUrl}, i) => {
           const repoList = $('<ul class="repos list-reset mt0">');
 
           $('#topics').append(
@@ -136,7 +137,7 @@
               $('<li class="repo">').append(
                 $(`<a rel="noopener" target="_blank">`, {
                   href: repo.html_url,
-                  class: repo.description ? 'hint--right' : null,
+                  class: repo.description ? `hint--${i === TOPICS.length - 1 ? 'left' : 'right'}` : null, // hack :\
                   'aria-label': repo.description,
                 }).append(
                   $('<code class="p0 h4">').text(repo.name)

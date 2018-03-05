@@ -62,7 +62,7 @@
       const ORGANIZATION = 'apertium',
             CACHE_KEY = `${ORGANIZATION}-cache`,
             EXPIRY_KEY = `${ORGANIZATION}-expiry`,
-            EXPIRY_MILLIS = 300000,
+            EXPIRY_MILLIS = 60000;
             TOPICS = ['languages', 'trunk', 'staging', 'nursery', 'incubator', 'tools'].map(
               topic => ({topic: `apertium-${topic}`, name: topic, repoUrl: `https://github.com/${ORGANIZATION}/apertium-${topic}`})
             );

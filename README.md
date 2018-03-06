@@ -17,7 +17,6 @@ See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_pr
   - `apertium-incubator` will contain staging language modules/pairs (repos with topic `apertium-incubator`).
   - `apertium-trunk` will contain trunk language modules/pairs (repos with topic `apertium-trunk`).
 - Meta repositories will be kept up-to-date by `sync.py` (described below).
-- SVN external properties will be used to maintain some backwards compatability.
 
 **N.B.** The topics (a.k.a. tags) are integral.
 

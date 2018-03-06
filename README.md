@@ -1,5 +1,7 @@
 # Apertium on Github
 
+[Source Browser](https://apertium.github.io/apertium-on-github/source-browser.html)
+
 ## Proposal
 
 See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_proposals/Move_Apertium_to_Github).

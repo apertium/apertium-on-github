@@ -17,3 +17,8 @@ do
     printf "%s\n" "${pairs[@]}" | xargs -n 1 -P $MAX_PROCS -I {} bash -c \
         'import_create_and_push_repo "$SVN_ROOT/${pair_location}/{}/" {} "[\"apertium-${pair_location}\"]"'
 done
+
+import_create_and_push_repo "$SVN_ROOT/trunk/apertium" "apertium" "[\"apertium-all\"]"'
+import_create_and_push_repo "$SVN_ROOT/trunk/lttoolbox" "lttoolbox" "[\"apertium-all\"]"'
+import_create_and_push_repo "$SVN_ROOT/trunk/apertium-lex-tools" "apertium-lex-tools" "[\"apertium-all\"]"'
+import_create_and_push_repo "$SVN_ROOT/trunk/apertium-separable" "apertium-separable" "[\"apertium-all\"]"'

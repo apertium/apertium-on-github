@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 source util.sh
 
@@ -18,7 +18,7 @@ do
         'import_create_and_push_repo "$SVN_ROOT/${pair_location}/{}/" {} "[\"apertium-${pair_location}\"]"'
 done
 
-import_create_and_push_repo "$SVN_ROOT/trunk/apertium" "apertium" "[\"apertium-core\"]"'
-import_create_and_push_repo "$SVN_ROOT/trunk/lttoolbox" "lttoolbox" "[\"apertium-core\"]"'
-import_create_and_push_repo "$SVN_ROOT/trunk/apertium-lex-tools" "apertium-lex-tools" "[\"apertium-core\"]"'
-import_create_and_push_repo "$SVN_ROOT/trunk/apertium-separable" "apertium-separable" "[\"apertium-core\"]"'
+import_create_and_push_repo "$SVN_ROOT/trunk/apertium" "apertium" "[\"apertium-core\"]"
+import_create_and_push_repo "$SVN_ROOT/trunk/lttoolbox" "lttoolbox" "[\"apertium-core\"]"
+import_create_and_push_repo "$SVN_ROOT/trunk/apertium-lex-tools" "apertium-lex-tools" "[\"apertium-core\"]"
+import_create_and_push_repo "$SVN_ROOT/trunk/apertium-separable" "apertium-separable" "[\"apertium-core\"]"

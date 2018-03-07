@@ -91,6 +91,8 @@ GitHub accounts. Utility functions are located in `util.sh`.
   GitHub organization
 - `add-contributors.sh` grants push permissions for each repository to those GitHub
   users who have previously contributed to the repo
+- `lock-files.sh` locks SVN files recursively (using SF shell service to add a pre-commit
+  hook would be optimal but it is down)
 
 #### Migration
 
@@ -102,7 +104,7 @@ needs to:
 1. Download and unzip [SubGit][6] in the current directory.
 1. Edit line 5 of `util.sh` with their own GitHub username and line 6 with `apertium`.
 1. Run `./invite-members.sh`. Wait for some time to allow people to accept invitations.
-1. Freeze the SVN repository.
+1. Run `./lock-files.sh`.
 1. Run `./import-modules.sh`.
 1. Run `./create-metarepos.sh`. Wait for ~two hours to allow GitHub to sync contributors.
 1. Run `./add-contributors.sh`.

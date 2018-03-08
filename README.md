@@ -154,7 +154,7 @@ layout options.
 
 The source for this interface is `source-browser.html`. For the sake of simplicity,
 only modern browsers are supported. It is made available via
-[GH pages](https://sushain97.github.io/apertium-on-github/source-browser.html).
+[GH pages](https://apertium.github.io/apertium-on-github/source-browser.html).
 
 ## Git Tips
 
@@ -174,7 +174,7 @@ only modern browsers are supported. It is made available via
 [2]: https://github.com/orgs/apertium/
 [3]: https://help.github.com/articles/repository-permission-levels-for-an-organization/
 [4]: https://github.com/blog/2191-pin-repositories-to-your-github-profile
-[5]: https://github.com/sushain97/apertium-on-github/blob/master/sync.py
+[5]: https://github.com/apertium/apertium-on-github/blob/master/sync.py
 [6]: https://subgit.com/
 [7]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
 [8]: https://help.github.com/articles/support-for-subversion-clients/

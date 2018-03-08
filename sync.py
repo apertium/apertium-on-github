@@ -52,7 +52,7 @@ METAREPOS = [
         'apertium-all': {'apertium-core', 'apertium-all'},
     },
 ]
-ORGANIZATION = 'mock-apertium'
+ORGANIZATION = 'apertium'
 GITHUB_API = 'https://api.github.com/graphql'
 
 DEFAULT_PORT = 9712

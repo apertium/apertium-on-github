@@ -42,8 +42,10 @@ set_repo_topics () {
 
 import_repo () {
     $SUBGIT configure \
-        --layout directory \
-        --svn-url "$1"
+        --layout auto \
+        --svn-url $SVN_ROOT \
+        --trunk "$1" \
+        "$2.git"
     cp ./svn-authors.txt "$2.git/subgit/authors.txt"
     $SUBGIT import "$2.git"
 }

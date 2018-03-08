@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source util.sh
 set +u
 
@@ -10,7 +10,7 @@ create_metarepo () {
 }
 
 metarepos=(staging nursery incubator trunk languages tools)
-printf "%s\n" "${metarepos[@]}" | xargs -n 1 -I {} bash -c 'create_metarepo "{}"'
+printf "%s\\n" "${metarepos[@]}" | xargs -n 1 -I {} bash -c 'create_metarepo "{}"'
 
 # setup apertium-all
 create_repo "apertium-all"

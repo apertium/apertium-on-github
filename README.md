@@ -1,5 +1,7 @@
 # Apertium on Github
 
+[Source Browser](https://apertium.github.io/apertium-on-github/source-browser.html)
+
 ## Proposal
 
 See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_proposals/Move_Apertium_to_Github).
@@ -15,7 +17,6 @@ See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_pr
   - `apertium-incubator` will contain staging language modules/pairs (repos with topic `apertium-incubator`).
   - `apertium-trunk` will contain trunk language modules/pairs (repos with topic `apertium-trunk`).
 - Meta repositories will be kept up-to-date by `sync.py` (described below).
-- SVN external properties will be used to maintain some backwards compatability.
 
 **N.B.** The topics (a.k.a. tags) are integral.
 
@@ -98,9 +99,9 @@ and use the `svn-authors.txt` file to convert
 SVN users to GitHub emails to establish connections between commits and
 GitHub accounts. Utility functions are located in `util.sh`.
 
-- `import-repo.sh "svn-url" "github-repo-name" '["github-topic-1", "github-topic-2", ...]'`
-  will import the SVN repo at `svn-url` to GitHub with the name
-  `github-repo-name` and the given (possibly only one) topics.
+- `import-repo.sh "svn-path" "github-repo-name" "github-topic"`
+  will import the SVN folder at `svn-path` to GitHub with the name
+  `github-repo-name` and the given topic.
 - `import-modules.sh` imports all language pairs, modules, and the Apertium core
   from SVN to Github.
 - `create-metarepos.sh` creates all the meta repos and syncs their submodules
@@ -108,6 +109,8 @@ GitHub accounts. Utility functions are located in `util.sh`.
   GitHub organization
 - `add-contributors.sh` grants push permissions for each repository to those GitHub
   users who have previously contributed to the repo
+- `lock-files.sh` locks SVN files recursively (using SF shell service to add a pre-commit
+  hook would be optimal but it is down)
 
 #### Migration
 
@@ -117,9 +120,9 @@ needs to:
 1. Create a [GitHub OAuth token][7] with 'repo' permissions.
 1. Run `export GITHUB_OAUTH_TOKEN=<token from above>` to set the environment variable.
 1. Download and unzip [SubGit][6] in the current directory.
-1. Edit line 5 of `util.sh` with their own GitHub username and line 6 with `apertium`.
+1. Edit line 5 of `util.sh` with their own GitHub username.
 1. Run `./invite-members.sh`. Wait for some time to allow people to accept invitations.
-1. Freeze the SVN repository.
+1. Run `./lock-files.sh`.
 1. Run `./import-modules.sh`.
 1. Run `./create-metarepos.sh`. Wait for ~two hours to allow GitHub to sync contributors.
 1. Run `./add-contributors.sh`.
@@ -169,7 +172,7 @@ layout options.
 
 The source for this interface is `source-browser.html`. For the sake of simplicity,
 only modern browsers are supported. It is made available via
-[GH pages](https://sushain97.github.io/apertium-on-github/source-browser.html).
+[GH pages](https://apertium.github.io/apertium-on-github/source-browser.html).
 
 ## Git Tips
 
@@ -189,7 +192,7 @@ only modern browsers are supported. It is made available via
 [2]: https://github.com/orgs/apertium/
 [3]: https://help.github.com/articles/repository-permission-levels-for-an-organization/
 [4]: https://github.com/blog/2191-pin-repositories-to-your-github-profile
-[5]: https://github.com/sushain97/apertium-on-github/blob/master/sync.py
+[5]: https://github.com/apertium/apertium-on-github/blob/master/sync.py
 [6]: https://subgit.com/
 [7]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
 [8]: https://help.github.com/articles/support-for-subversion-clients/

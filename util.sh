@@ -8,7 +8,7 @@ SUBGIT=./subgit-3.2.6/bin/subgit
 SVN_ROOT='https://svn.code.sf.net/p/apertium/svn'
 GITHUB_API='https://api.github.com'
 USER='sushain97'
-ORG='apertium'
+ORG='sushain97'
 LANG_RE='\w{2,3}(_\w+)?'
 
 delete_repo () {
@@ -42,8 +42,9 @@ set_repo_topics () {
 
 import_repo () {
     $SUBGIT configure \
-        --layout directory \
-        --svn-url "$1"
+        --layout auto \
+        --svn-url $SVN_ROOT \
+        --trunk "$1"
     cp ./svn-authors.txt "$2.git/subgit/authors.txt"
     $SUBGIT import "$2.git"
 }

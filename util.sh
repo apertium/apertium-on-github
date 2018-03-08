@@ -45,8 +45,8 @@ import_repo () {
         --layout auto \
         --svn-url $SVN_ROOT \
         --trunk "$1"
-    cp ./svn-authors.txt "$2.git/subgit/authors.txt"
-    $SUBGIT import "$2.git"
+    cp ./svn-authors.txt apertium-sf-net.git/subgit/authors.txt
+    $SUBGIT import apertium-sf-net.git
 }
 
 push_bare_repo () {

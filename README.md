@@ -102,7 +102,7 @@ needs to:
 1. Create a [GitHub OAuth token][7] with 'repo' permissions.
 1. Run `export GITHUB_OAUTH_TOKEN=<token from above>` to set the environment variable.
 1. Download and unzip [SubGit][6] in the current directory.
-1. Edit line 5 of `util.sh` with their own GitHub username and line 6 with `apertium`.
+1. Edit line 5 of `util.sh` with their own GitHub username.
 1. Run `./invite-members.sh`. Wait for some time to allow people to accept invitations.
 1. Run `./lock-files.sh`.
 1. Run `./import-modules.sh`.

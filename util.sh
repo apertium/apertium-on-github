@@ -55,6 +55,8 @@ push_bare_repo () {
         cd "$1.git/"
         git remote add origin "git@github.com:$ORG/$1.git"
         git push origin --force --all
+        git push origin --force --tags
+        git push origin --force refs/notes/*
     )
 }
 

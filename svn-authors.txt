@@ -85,6 +85,7 @@ fulupjakez = Fulup Jakez <fulup.jakez@ofis-bzh.org>
 g-ramirez = Gema Ramírez Sánchez <gramirez@prompsit.com>
 gaebpien = Maja Lisa Kappfjell <maja.l.kappfjell@uit.no>
 gallaecio = Adrián Chaves Fernández <adriyetichaves@gmail.com>
+ganto = Mirlan Ipasov <kantoro90@gmail.com>
 garbine = Garbine <garbine@eleka.net>
 gfro3d = Gianfranco Fronteddu <gfro3d@gmail.com>
 ggrossi = Gianluca Grossi <gianluca.grossi@me.com>

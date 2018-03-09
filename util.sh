@@ -57,6 +57,7 @@ push_bare_repo () {
         git push origin --force --all
         git push origin --force --tags
         git push origin --force refs/notes/*
+        git push origin --force refs/svn/map
     )
 }
 

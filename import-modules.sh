@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source util.sh
+set +u
 
 languages=( $(svn ls $SVN_ROOT/languages | grep -E "^apertium-$LANG_RE/$" | cut -d '/' -f 1) )
 printf "%s\n" "${languages[@]}" | xargs -n 1 -P $MAX_PROCS -I {} bash -c \

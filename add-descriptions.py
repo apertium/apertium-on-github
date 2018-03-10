@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-__author__ = "Sushain K. Cherivirala"
-__version__ = "0.1.0"
-__license__ = "GPLv3+"
+__author__ = 'Sushain K. Cherivirala'
+__version__ = '0.1.0'
+__license__ = 'GPLv3+'
 
 import argparse
 import json
@@ -25,7 +25,7 @@ def describe(token, repo_name, description):
     request_data = json.dumps({
         'name': repo_name,
         'description': description,
-    }).encode("utf-8")
+    }).encode('utf-8')
     url = '{}/repos/{}/{}'.format(GITHUB_API, ORGANIZATION, repo_name)
     request = urllib.request.Request(url, data=request_data, headers=headers, method='PATCH')
     try:
@@ -60,7 +60,7 @@ def main():
                 code = module_code.group(1)
                 name = lang_names.get(ISO_639_CODES.get(code, code))
                 if name:
-                    description = "Apertium linguistic data for {}".format(name)
+                    description = 'Apertium linguistic data for {}'.format(name)
                     logging.info('Describing %s as %s', repo_name, repr(description))
                     describe(args.token, repo_name, description)
                 else:
@@ -69,7 +69,7 @@ def main():
                 code1, _, code2, _ = pair_codes.groups()
                 name1, name2 = lang_names.get(ISO_639_CODES.get(code1, code1)), lang_names.get(ISO_639_CODES.get(code2, code2))
                 if name1 and name2:
-                    description = "Apertium translation pair for {} and {}".format(name1, name2)
+                    description = 'Apertium translation pair for {} and {}'.format(name1, name2)
                     logging.info('Describing %s as %s', repo_name, repr(description))
                     describe(args.token, repo_name, description)
                 else:

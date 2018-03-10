@@ -5,9 +5,9 @@
     Requires all `Push` and `Repository` events.
 '''
 
-__author__ = "Sushain K. Cherivirala"
-__version__ = "0.1.0"
-__license__ = "GPLv3+"
+__author__ = 'Sushain K. Cherivirala'
+__version__ = '0.1.0'
+__license__ = 'GPLv3+'
 
 import argparse
 import atexit

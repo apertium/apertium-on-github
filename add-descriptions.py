@@ -18,6 +18,22 @@ DEFAULT_APY_URL = 'https://beta.apertium.org/apy'
 GITHUB_API = 'https://api.github.com'
 
 
+def describe(token, repo_name, description):
+    headers = {
+        'Authorization': 'bearer {}'.format(token),
+    }
+    request_data = json.dumps({
+        'name': repo_name,
+        'description': description,
+    }).encode("utf-8")
+    url = '{}/repos/{}/{}'.format(GITHUB_API, ORGANIZATION, repo_name)
+    request = urllib.request.Request(url, data=request_data, headers=headers, method='PATCH')
+    try:
+        urllib.request.urlopen(request)
+    except urllib.error.HTTPError as error:
+        logging.error('Describing %s failed: %s', repo_name, error.read(), exc_info=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description='Add descriptions to Apertium repositories.')
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
@@ -33,33 +49,31 @@ def main():
 
     lang_names = json.loads(urllib.request.urlopen(DEFAULT_APY_URL + '/listLanguageNames?locale=eng').read().decode('utf-8'))
 
-    repos = list(map(operator.itemgetter('node'), list_repos(args.token, extraNodes=['description'])))
+    repos = list(map(operator.itemgetter('node'), list_repos(args.token, extra_nodes=['description'])))
     for repo in repos:
         topics = set(map(lambda repo: repo['topic']['name'], repo['repositoryTopics']['nodes']))
         repo_name = repo['name']
-        if repo['description'] is None and 'apertium-languages' not in topics:
-            codes = re.match('^apertium-(\w{2,3}(_\w+)?)-(\w{2,3}(_\w+)?)$', repo_name)
-            if codes:
-                code1, _, code2, _ = codes.groups()
+        if repo['description'] is None and not ({'apertium-tools', 'apertium-core'} & topics):
+            module_code = re.match('^apertium-(\w{2,3}(_\w+)?)$', repo_name)
+            pair_codes = re.match('^apertium-(\w{2,3}(_\w+)?)-(\w{2,3}(_\w+)?)$', repo_name)
+            if module_code:
+                code = module_code.group(1)
+                name = lang_names.get(ISO_639_CODES.get(code, code))
+                if name:
+                    description = "Apertium linguistic data for {}".format(name)
+                    logging.info('Describing %s as %s', repo_name, repr(description))
+                    describe(args.token, repo_name, description)
+                else:
+                    logging.warn('Unable to describe language module %s, have %s=%s', repo_name, code, repr(name))
+            elif pair_codes:
+                code1, _, code2, _ = pair_codes.groups()
                 name1, name2 = lang_names.get(ISO_639_CODES.get(code1, code1)), lang_names.get(ISO_639_CODES.get(code2, code2))
                 if name1 and name2:
                     description = "Apertium translation pair for {} and {}".format(name1, name2)
                     logging.info('Describing %s as %s', repo_name, repr(description))
-                    headers = {
-                        'Authorization': 'bearer {}'.format(args.token),
-                    }
-                    request_data = json.dumps({
-                        'name': repo_name,
-                        'description': description,
-                    }).encode("utf-8")
-                    url = '{}/repos/{}/{}'.format(GITHUB_API, ORGANIZATION, repo_name)
-                    request = urllib.request.Request(url, data=request_data, headers=headers, method='PATCH')
-                    try:
-                        urllib.request.urlopen(request)
-                    except urllib.error.HTTPError as error:
-                        logging.error('Describing %s failed: %s', repo_name, error.read(), exc_info=True)
+                    describe(args.token, repo_name, description)
                 else:
-                    logging.warn('Unable to describe %s, have %s=%s and %s=%s', repo_name, code1, repr(name1), code2, repr(name2))
+                    logging.warn('Unable to describe pair %s, have %s=%s and %s=%s', repo_name, code1, repr(name1), code2, repr(name2))
 
 
 if __name__ == '__main__':

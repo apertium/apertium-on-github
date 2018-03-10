@@ -84,7 +84,7 @@ signal.signal(signal.SIGQUIT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
 
-def _list_repos(token, after=None, extraNodes=None):
+def _list_repos(token, after=None, extra_nodes=None):
     headers = {
         'Authorization': 'bearer {}'.format(token),
     }
@@ -115,7 +115,7 @@ def _list_repos(token, after=None, extraNodes=None):
           }''') % (
             ORGANIZATION,
             (', after: "{}"'.format(after) if after else ''),
-            '\n'.join(extraNodes) if extraNodes else ''
+            '\n'.join(extra_nodes) if extra_nodes else ''
         )
     }).encode("utf-8")
     request = urllib.request.Request(GITHUB_API, data=request_data, headers=headers)
@@ -124,7 +124,7 @@ def _list_repos(token, after=None, extraNodes=None):
     repos = data['organization']['repositories']
     if repos['pageInfo']['hasNextPage']:
         logging.debug('Fetched list of %d repositories, continuing to next page', len(repos['edges']))
-        return repos['edges'] + _list_repos(token, after=repos['pageInfo']['endCursor'], extraNodes=extraNodes)
+        return repos['edges'] + _list_repos(token, after=repos['pageInfo']['endCursor'], extra_nodes=extra_nodes)
     else:
         logging.debug('Fetched list of %d repositories, query complete', len(repos['edges']))
         return repos['edges']

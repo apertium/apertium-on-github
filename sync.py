@@ -84,7 +84,7 @@ signal.signal(signal.SIGQUIT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
 
-def _list_repos(token, after=None):
+def _list_repos(token, after=None, extraNodes=None):
     headers = {
         'Authorization': 'bearer {}'.format(token),
     }
@@ -96,6 +96,7 @@ def _list_repos(token, after=None):
                 edges {
                   node {
                     name
+                    %s
                     repositoryTopics(first: 50) {
                       nodes {
                         topic {
@@ -111,7 +112,11 @@ def _list_repos(token, after=None):
                 }
               }
             }
-          }''') % (ORGANIZATION, (', after: "{}"'.format(after) if after else ''))
+          }''') % (
+            ORGANIZATION,
+            (', after: "{}"'.format(after) if after else ''),
+            '\n'.join(extraNodes) if extraNodes else ''
+        )
     }).encode("utf-8")
     request = urllib.request.Request(GITHUB_API, data=request_data, headers=headers)
     response = urllib.request.urlopen(request).read().decode('utf-8')
@@ -119,15 +124,15 @@ def _list_repos(token, after=None):
     repos = data['organization']['repositories']
     if repos['pageInfo']['hasNextPage']:
         logging.debug('Fetched list of %d repositories, continuing to next page', len(repos['edges']))
-        return repos['edges'] + _list_repos(token, after=repos['pageInfo']['endCursor'])
+        return repos['edges'] + _list_repos(token, after=repos['pageInfo']['endCursor'], extraNodes=extraNodes)
     else:
         logging.debug('Fetched list of %d repositories, query complete', len(repos['edges']))
         return repos['edges']
 
 
-def list_repos(token):
+def list_repos(token, **kwargs):
     logging.info('Listing repositories')
-    repos = _list_repos(token, after=None)
+    repos = _list_repos(token, after=None, **kwargs)
     logging.info('Fetched list of %d repositories', len(repos))
     logging.debug('Feched repositories:\n%s', pprint.pformat(repos, indent=2))
     return repos

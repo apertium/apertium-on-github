@@ -9,6 +9,7 @@ SVN_ROOT='https://svn.code.sf.net/p/apertium/svn'
 GITHUB_API='https://api.github.com'
 USER='sushain97'
 ORG='apertium'
+GITHUB_ROOT="https://github.com/${ORG}"
 LANG_RE='\w{2,3}(_\w+)?'
 
 delete_repo () {

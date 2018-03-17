@@ -109,6 +109,7 @@ GitHub accounts. Utility functions are located in `util.sh`.
   GitHub organization
 - `add-contributors.sh` grants push permissions for each repository to those GitHub
   users who have previously contributed to the repo
+- `add-getmeta.sh` adds/updates existing .gitignore and .gitattributes
 - `lock-files.sh` locks SVN files recursively (using SF shell service to add a pre-commit
   hook would be optimal but it is down)
 

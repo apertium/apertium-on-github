@@ -2,8 +2,7 @@
 
 source util.sh
 
-GIT_ATTRIBUTES="
-*.dix linguist-language=XML linguist-detectable=true
+GIT_ATTRIBUTES="*.dix linguist-language=XML linguist-detectable=true
 *.lrx linguist-language=XML linguist-detectable=true
 *.lsx linguist-language=XML linguist-detectable=true
 *.tsx linguist-language=XML linguist-detectable=true
@@ -52,7 +51,8 @@ do
             else
                 echo "Adding gitattributes to $repo"
                 printf %s "$(< .gitattributes)" > .gitattributes # strip any existing trailing newline
-                echo "$GIT_ATTRIBUTES" >> .gitattributes
+                printf "\\n" >> .gitattributes # now, ensure there's a newline (exactly 1)
+                echo "$GIT_ATTRIBUTES" >> .gitattributes # add our attributes
                 awk '!seen[$0]++' .gitattributes > tmp_gitattributes && mv tmp_gitattributes .gitattributes # remove any duplicate lines
             fi
 

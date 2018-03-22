@@ -139,27 +139,31 @@ needs to:
 Usage:
 
     usage: sync.py [-h] [--verbose] [--dir DIR]
-                  [--repo {apertium-languages,apertium-nursery,apertium-staging,apertium-incubator,apertium-all,apertium-trunk,apertium-tools}]
-                  [--port PORT] [--token TOKEN] [--sync-interval SYNC_INTERVAL]
-                  {sync,startserver}
+                  [--repo {apertium-nursery,apertium-incubator,apertium-tools,apertium-trunk,apertium-staging,apertium-languages,apertium-all}]
+                  [--port PORT] --token TOKEN [--sync-interval SYNC_INTERVAL]
+                  [--author AUTHOR]
+                  {startserver,sync}
 
     Sync Apertium meta repositories.
 
     positional arguments:
-      {sync,startserver}    use "startserver" to start the server and "sync --repo
+      {startserver,sync}    use "startserver" to start the server and "sync --repo
                             [name]" to force a meta-repo sync
 
     optional arguments:
       -h, --help            show this help message and exit
       --verbose, -v         add verbosity (maximum -vv)
       --dir DIR, -d DIR     directory to clone meta repos
-      --repo {apertium-languages,apertium-nursery,apertium-staging,apertium-incubator,apertium-all,apertium-trunk,apertium-tools}, -r {apertium-languages,apertium-nursery,apertium-staging,apertium-incubator,apertium-all,apertium-trunk,apertium-tools}
+      --repo {apertium-nursery,apertium-incubator,apertium-tools,apertium-trunk,apertium-staging,apertium-languages,apertium-all}, -r {apertium-nursery,apertium-incubator,apertium-tools,apertium-trunk,apertium-staging,apertium-languages,apertium-all}
                             meta-repo to sync (default: all)
       --port PORT, -p PORT  server port (default: 9712)
       --token TOKEN, -t TOKEN
                             GitHub OAuth token
       --sync-interval SYNC_INTERVAL, -i SYNC_INTERVAL
                             min interval between syncs (default: 3s)
+      --author AUTHOR, -a AUTHOR
+                            commit author (default: Apertium Bot
+                            <apertiumbot@projectjj.com>)
 
 The GitHub OAuth token is described in the 'Scripts' section above. For
 `sync.py`, it can also be set through the environment variable

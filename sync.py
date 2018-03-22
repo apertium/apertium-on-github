@@ -58,6 +58,7 @@ GITHUB_API = 'https://api.github.com/graphql'
 DEFAULT_PORT = 9712
 DEFAULT_OAUTH_TOKEN = os.environ.get('GITHUB_OAUTH_TOKEN')
 DEFAULT_CLONE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'repos')
+DEFAULT_AUTHOR = 'Apertium Bot <apertiumbot@projectjj.com>'
 DEFAULT_SYNC_INTERVAL = 3  # seconds
 
 server = None
@@ -153,10 +154,12 @@ def repos_for_topics(repos_by_topic, topics):
 
 
 class MetaRepoSyncer:
-    def __init__(self, clone_dir, name, submodules):
+    def __init__(self, clone_dir, name, submodules, author):
         self.clone_dir = clone_dir
         self.name = name
         self.submodules = submodules
+        self.author = author
+
         self.dir = os.path.join(clone_dir, name)
         self.check_call = functools.partial(subprocess.check_call, cwd=self.dir)
 
@@ -220,7 +223,7 @@ class MetaRepoSyncer:
                 len(submodules_missing), ', '.join(submodules_missing) or 'None',
             ))
             logging.debug('Meta repository %s commit message: %s', self.name, commit_message)
-            self.check_call(shlex.split('git commit --all --message "{}"'.format(commit_message)))
+            self.check_call(shlex.split('git commit --all --author "{}" --message "{}"'.format(self.author, commit_message)))
         else:
             logging.info('Meta repository %s requires no changes', self.name)
 
@@ -332,7 +335,7 @@ class Server(socketserver.TCPServer):
                     with concurrent.futures.ThreadPoolExecutor() as pool:
                         for name, topics in metarepo_group.items():
                             submodules = repos_for_topics(repos_by_topic, topics)
-                            pool.submit(MetaRepoSyncer(self.args.dir, name, submodules).sync)
+                            pool.submit(MetaRepoSyncer(self.args.dir, name, submodules, self.args.author).sync)
                 else:
                     logging.debug('Ignoring events for meta repository group %d', i)
         except Exception as error:
@@ -371,6 +374,7 @@ def main():
     parser.add_argument('--port', '-p', type=int, help='server port (default: {})'.format(DEFAULT_PORT), default=DEFAULT_PORT)
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
     parser.add_argument('--sync-interval', '-i', help='min interval between syncs (default: {}s)'.format(DEFAULT_SYNC_INTERVAL), default=DEFAULT_SYNC_INTERVAL)
+    parser.add_argument('--author', '-a', help='commit author (default: {})'.format(DEFAULT_AUTHOR), default=DEFAULT_AUTHOR)
     args = parser.parse_args()
 
     levels = [logging.WARNING, logging.INFO, logging.DEBUG]
@@ -389,12 +393,12 @@ def main():
         if args.repo:
             topics = collections.ChainMap(*METAREPOS)[args.repo]
             submodules = repos_for_topics(repos_by_topic, topics)
-            MetaRepoSyncer(args.dir, args.repo, submodules).sync()
+            MetaRepoSyncer(args.dir, args.repo, submodules, args.author).sync()
         else:
             for metarepo_group in METAREPOS:
                 for name, topics in metarepo_group.items():
                     submodules = repos_for_topics(repos_by_topic, topics)
-                    MetaRepoSyncer(args.dir, name, submodules).sync()
+                    MetaRepoSyncer(args.dir, name, submodules, args.author).sync()
 
 
 if __name__ == '__main__':

@@ -9,6 +9,12 @@
 First map current latest version:<br>
 `./s2g-map.php /trunk/apertium-spa-arg | tee map`
 
+Looking through [the log](https://apertium.projectjj.com/trac/log/trunk/apertium-spa-arg), the first few revisions are not useful, as they merely create the folder and create an incorrect file and then some skeleton files.
+
+Edit `map` to remove 61667, 61668, 61669.
+
+Whether [61669](https://apertium.projectjj.com/trac/changeset/61669) is valuable comes down to how dirty the history would be with that revision in the log. 61669 is lacking a lot of the files that exist in earlier copies of the copied-from folders, so because of how the import works, including 61669 would break linear histories for all those files. I chose to exclude 61669 for that reason.
+
 Then add to the map the revisions from the copied-from folders:<br>
 `./s2g-map.php /trunk/apertium-es-an | tee -a map`
 

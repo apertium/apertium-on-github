@@ -26,8 +26,7 @@ GIT_IGNORE="/*.bin
 /*.mode
 /.deps
 /config.in
-/config
-/*.prob"
+/config"
 
 # we could check out the meta-repos and do a git submodule foreach but that
 # requires a much better internet connection than the one I have access to now

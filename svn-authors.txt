@@ -107,6 +107,7 @@ immortalshox = Grzegorz Stark <gstark0@icloud.com>
 inariksit = Inari Listenmaa <inari@chalmers.se>
 irene-tang = Irene Tang <itang1@swarthmore.edu>
 isaaccp = Isaac Clerencia Perez <japerez@dlsi.ua.es>
+isabelchen = Isabel Imbernón <isabelimbernon@gmail.com>
 izakus = Iza Kusicielek <iza.kusicielek@gmail.com>
 jackrueter = Jack Rueter <rueter.jack@gmail.com>
 jam0522 = jam0522 <jam0522@users.sourceforge.net>

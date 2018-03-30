@@ -60,6 +60,7 @@ DEFAULT_OAUTH_TOKEN = os.environ.get('GITHUB_OAUTH_TOKEN')
 DEFAULT_CLONE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'repos')
 DEFAULT_AUTHOR = 'Apertium Bot <apertiumbot@projectjj.com>'
 DEFAULT_SYNC_INTERVAL = 3  # seconds
+DEFAULT_SYNC_DEPTH = 1
 
 server = None
 
@@ -154,11 +155,12 @@ def repos_for_topics(repos_by_topic, topics):
 
 
 class MetaRepoSyncer:
-    def __init__(self, clone_dir, name, submodules, author):
+    def __init__(self, clone_dir, name, submodules, author, sync_depth):
         self.clone_dir = clone_dir
         self.name = name
         self.submodules = submodules
         self.author = author
+        self.sync_depth = sync_depth
 
         self.dir = os.path.join(clone_dir, name)
         self.check_call = functools.partial(subprocess.check_call, cwd=self.dir)
@@ -166,7 +168,7 @@ class MetaRepoSyncer:
     def clone(self, init_submodules=True):
         if not os.path.isdir(os.path.join(self.clone_dir, self.name)):
             logging.info('Cloning meta repository %s', self.name)
-            subprocess.check_call(shlex.split('git clone --depth 1 git@github.com:{}/{}.git'.format(ORGANIZATION, self.name)), cwd=self.clone_dir)
+            subprocess.check_call(shlex.split('git clone --depth {} git@github.com:{}/{}.git'.format(self.sync_depth, ORGANIZATION, self.name)), cwd=self.clone_dir)
             if init_submodules and self._has_submodules():
                 self.check_call(shlex.split('git submodule update --depth 1 --init --jobs 8'))
         else:
@@ -335,7 +337,7 @@ class Server(socketserver.TCPServer):
                     with concurrent.futures.ThreadPoolExecutor() as pool:
                         for name, topics in metarepo_group.items():
                             submodules = repos_for_topics(repos_by_topic, topics)
-                            pool.submit(MetaRepoSyncer(self.args.dir, name, submodules, self.args.author).sync)
+                            pool.submit(MetaRepoSyncer(self.args.dir, name, submodules, self.args.author, self.args.sync_depth).sync)
                 else:
                     logging.debug('Ignoring events for meta repository group %d', i)
         except Exception as error:
@@ -374,6 +376,7 @@ def main():
     parser.add_argument('--port', '-p', type=int, help='server port (default: {})'.format(DEFAULT_PORT), default=DEFAULT_PORT)
     parser.add_argument('--token', '-t', help='GitHub OAuth token', required=(DEFAULT_OAUTH_TOKEN is None), default=DEFAULT_OAUTH_TOKEN)
     parser.add_argument('--sync-interval', '-i', help='min interval between syncs (default: {}s)'.format(DEFAULT_SYNC_INTERVAL), default=DEFAULT_SYNC_INTERVAL)
+    parser.add_argument('--sync-depth', '-n', help='clone depth for syncing (default: {})'.format(DEFAULT_SYNC_DEPTH), default=DEFAULT_SYNC_DEPTH)
     parser.add_argument('--author', '-a', help='commit author (default: {})'.format(DEFAULT_AUTHOR), default=DEFAULT_AUTHOR)
     args = parser.parse_args()
 
@@ -393,12 +396,12 @@ def main():
         if args.repo:
             topics = collections.ChainMap(*METAREPOS)[args.repo]
             submodules = repos_for_topics(repos_by_topic, topics)
-            MetaRepoSyncer(args.dir, args.repo, submodules, args.author).sync()
+            MetaRepoSyncer(args.dir, args.repo, submodules, args.author, args.sync_depth).sync()
         else:
             for metarepo_group in METAREPOS:
                 for name, topics in metarepo_group.items():
                     submodules = repos_for_topics(repos_by_topic, topics)
-                    MetaRepoSyncer(args.dir, name, submodules, args.author).sync()
+                    MetaRepoSyncer(args.dir, name, submodules, args.author, args.sync_depth).sync()
 
 
 if __name__ == '__main__':

@@ -155,12 +155,12 @@ def repos_for_topics(repos_by_topic, topics):
 
 
 class MetaRepoSyncer:
-    def __init__(self, clone_dir, name, submodules, author, sync_depth):
+    def __init__(self, clone_dir, name, submodules, author, depth):
         self.clone_dir = clone_dir
         self.name = name
         self.submodules = submodules
         self.author = author
-        self.sync_depth = sync_depth
+        self.depth = depth
 
         self.dir = os.path.join(clone_dir, name)
         self.check_call = functools.partial(subprocess.check_call, cwd=self.dir)
@@ -168,9 +168,9 @@ class MetaRepoSyncer:
     def clone(self, init_submodules=True):
         if not os.path.isdir(os.path.join(self.clone_dir, self.name)):
             logging.info('Cloning meta repository %s', self.name)
-            subprocess.check_call(shlex.split('git clone --depth {} git@github.com:{}/{}.git'.format(self.sync_depth, ORGANIZATION, self.name)), cwd=self.clone_dir)
+            subprocess.check_call(shlex.split('git clone --depth {} git@github.com:{}/{}.git'.format(self.depth, ORGANIZATION, self.name)), cwd=self.clone_dir)
             if init_submodules and self._has_submodules():
-                self.check_call(shlex.split('git submodule update --depth {} --init --jobs 8'.format(self.sync_depth)))
+                self.check_call(shlex.split('git submodule update --depth {} --init --jobs 8'.format(self.depth)))
         else:
             logging.debug('Meta repository %s already cloned', self.name)
 

@@ -170,7 +170,7 @@ class MetaRepoSyncer:
             logging.info('Cloning meta repository %s', self.name)
             subprocess.check_call(shlex.split('git clone --depth {} git@github.com:{}/{}.git'.format(self.sync_depth, ORGANIZATION, self.name)), cwd=self.clone_dir)
             if init_submodules and self._has_submodules():
-                self.check_call(shlex.split('git submodule update --depth 1 --init --jobs 8'))
+                self.check_call(shlex.split('git submodule update --depth {} --init --jobs 8'.format(self.sync_depth)))
         else:
             logging.debug('Meta repository %s already cloned', self.name)
 

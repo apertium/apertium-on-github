@@ -71,12 +71,6 @@
               topic => ({topic: `apertium-${topic}`, name: topic, repoUrl: `https://github.com/${ORGANIZATION}/apertium-${topic}`})
             );
 
-      const REPO_NORMALIZATION_REGEX = new RegExp(`^${ORGANIZATION}-`);
-
-      function normalizeRepoName(name) {
-        return name.replace(REPO_NORMALIZATION_REGEX, '').toLowerCase();
-      }
-
       async function getReposByTopic(organization) {
         const headers = new Headers({'Accept': 'application/vnd.github.mercy-preview+json'});
         const cacheStale = !(CACHE_KEY in localStorage) || localStorage[EXPIRY_KEY] < Date.now();
@@ -147,7 +141,11 @@
           const repos = reposByTopic[topic] || [];
           repos
             .sort((a, b) => a.name.localeCompare(b.name))
-            .filter(({name}) => normalizeRepoName(name).includes(normalizedSearchText))
+            .filter(
+              ({name, description}) =>
+                name.toLowerCase().includes(normalizedSearchText) ||
+                description && description.toLowerCase().includes(normalizedSearchText)
+            )
             .forEach(({name, description, html_url}) =>
               repoList.append(
                 $('<li class="repo">').append(

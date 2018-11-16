@@ -100,13 +100,16 @@
           name: topic,
           repoUrl: `https://github.com/${ORGANIZATION}/apertium-${topic}`,
         }));
+        
       async function getReposByTopic(organization) {
         const headers = new Headers({ Accept: 'application/vnd.github.mercy-preview+json' });
         const cacheStale = !(CACHE_KEY in localStorage) || localStorage[EXPIRY_KEY] < Date.now();
+          
         function _fetchRepos(page) {
           const url = `https://api.github.com/orgs/${ORGANIZATION}/repos?page=${page}&per_page=100`;
           return fetch(url, { headers });
         }
+          
         let reposByTopic = {};
         function _addRepos(repos) {
           repos.forEach(repo => {
@@ -117,24 +120,30 @@
             });
           });
         }
+          
         if (cacheStale) {
           console.warn('Repository list cache stale, updating.');
+            
           const response = await _fetchRepos(1);
           _addRepos(await response.json());
           const linkHeader = response.headers.get('Link');
           const links = linkHeader ? linkHeader.split(',').map(x => x.split('; ')) : [];
           const lastPage = links.length ? parseInt(links.find(([_, rel]) => rel === 'rel="last"')[0].match(/page=(\d+)/)[1]) : 1;
+    
           const remainingPages = [...Array(lastPage + 1).keys()].slice(2);
           const responses = await Promise.all(remainingPages.map(_fetchRepos));
           const reposs = await Promise.all(responses.map(response => response.json()));
           reposs.forEach(_addRepos);
+            
           localStorage[CACHE_KEY] = JSON.stringify(reposByTopic);
           localStorage[EXPIRY_KEY] = Date.now() + EXPIRY_MILLIS;
         } else {
           reposByTopic = JSON.parse(localStorage[CACHE_KEY]);
         }
+          
         return Promise.resolve(reposByTopic);
       }
+        
       async function showTopics() {
         $('#topics, #loading').toggleClass('display-none');
 
@@ -160,6 +169,7 @@
               repoList,
             ),
           );
+            
           const repos = reposByTopic[topic] || [];
           repos
             .sort((a, b) => a.name.localeCompare(b.name))
@@ -184,17 +194,21 @@
               ),
             );
         });
+          
         $('#topics, #loading').toggleClass('display-none');
       }
+        
       function refreshTopics() {
         localStorage.clear();
         showTopics();
       }
+        
       function showSearchInput() {
         $('#search')
           .removeClass('display-none')
           .focus();
       }
+        
       function createNavbar(item) {
           $('#li').append(
               $('<a>', {
@@ -203,28 +217,29 @@
               }).text(item),  
           );
       }
-        $(window).scroll(() => {
-            let top = $(window).scrollTop();
-            let bottom = $(window).scrollTop() + $(window).height();
-            for(let i = 0; i < TOPICS.length; i++){
-                let heading = TOPICS[i].name;
-                let vartop = $('#' + heading).position();
-                  if(top < vartop.top && vartop.top < bottom){
-                      $('#li' + heading).hide();
-              }
-                  else{
-                      $('#li' + heading).show();
-                      let $heading = $('#li' + heading);
-                      if(vartop.top > bottom){
-                          $heading.text(heading + '↓')
-                      }
-                      else {
-                          $heading.text(heading + '↑')
+        
+      $(window).scroll(() => {
+          let top = $(window).scrollTop();
+          let bottom = $(window).scrollTop() + $(window).height();
+          for(let i = 0; i < TOPICS.length; i++){
+              let heading = TOPICS[i].name;
+              let vartop = $('#' + heading).position();
+                if(top < vartop.top && vartop.top < bottom){
+                    $('#li' + heading).hide();
+            }
+                else{
+                    $('#li' + heading).show();
+                    let $heading = $('#li' + heading);
+                    if(vartop.top > bottom){
+                        $heading.text(heading + '↓')
                     }
+                    else {
+                        $heading.text(heading + '↑')
                   }
                 }
-            });  
-        
+              }
+          });  
+
       $(document).ready(() => {
         let list = [];
         $("#navbar").append('<li id="li"></li>');
@@ -252,6 +267,7 @@
             showSearchInput();
           }
         });
+          
         setInterval(refreshTopics, EXPIRY_MILLIS * 2);
         showTopics();
       });

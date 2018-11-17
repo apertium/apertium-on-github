@@ -209,44 +209,44 @@
           .focus();
       }
 
-      function createNavbar(item) {
-          $('#li').append(
-              $('<a>', {
-                  id: 'li' + item,
-                  href: '#' + item,
-              }).text(item),
-          );
+      function createNavbar(topic) {
+        $('.li').append(
+          $('<a>', {
+            id: `li${topic}`,
+            href: `#${topic}`
+          }).text(topic)
+        );
       }
 
+      let list = [];
+      $(document).ready(() => {
+	    TOPICS.forEach(item =>{
+	      let heading = item.name;
+	      list.push(heading);
+	    });
+      });
+
       $(window).scroll(() => {
-          let top = $(window).scrollTop();
-          let bottom = $(window).scrollTop() + $(window).height();
-          for(let i = 0; i < TOPICS.length; i++){
-              let heading = TOPICS[i].name;
-              let vartop = $('#' + heading).position();
-                if(top < vartop.top && vartop.top < bottom){
-                    $('#li' + heading).hide();
+        let top = $(window).scrollTop();
+        let bottom = $(window).scrollTop() + $(window).height();
+        list.forEach(heading => {
+          let vartop = $(`#${heading}`).position();
+          if (top < vartop.top && vartop.top < bottom) {
+            $(`#li${heading}`).hide();
+          } else {
+            $(`#li${heading}`).show();
+            let $heading = $(`#li${heading}`);
+            if (vartop.top > bottom) {
+              $heading.text(`${heading}↓`);
+            } else {
+              $heading.text(`${heading}↑`);
             }
-                else{
-                    $('#li' + heading).show();
-                    let $heading = $('#li' + heading);
-                    if(vartop.top > bottom){
-                        $heading.text(heading + '↓')
-                    }
-                    else {
-                        $heading.text(heading + '↑')
-                  }
-                }
-              }
-          });
+          }
+        });
+      });
 
       $(document).ready(() => {
-        let list = [];
-        $("#navbar").append('<li id="li"></li>');
-          for(let i = 0; i < TOPICS.length; i++){
-              let heading = TOPICS[i].name;
-              list.push(heading);
-              }
+        $('#navbar').append('<li class="li"></li>');
         list.forEach(createNavbar);
 
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
@@ -254,6 +254,7 @@
           currentTarget.blur();
           refreshTopics();
         });
+
         $('#search').on('input', showTopics);
         $(document.body).keypress(({ target, altKey, ctrlKey, metaKey, key }) => {
           if (target === document.body && !altKey && !ctrlKey && !metaKey) {

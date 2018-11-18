@@ -14,8 +14,8 @@
           padding: 14px 16px;
       }
       .topic {
-          padding-top:75px; 
-          margin-top:-75px;
+          padding-top: 75px; 
+          margin-top: -75px;
       }
       #content {
         margin-top: 75px;
@@ -195,27 +195,24 @@
       $(document).ready(() => {
         $(window).on('scroll resize', function(){
             const top = $(window).scrollTop();
-            const bottom = $(window).scrollTop() + $(window).height();
-            TOPICS.forEach(heading => {
-              heading = heading.name;
-              let heading_position = $(`#${heading}`).position();
-              if (top < heading_position.top && heading_position.top < bottom) {
-                $(`#${heading}-nav-link`).hide();
+            const bottom = top + $(window).height();
+            TOPICS.forEach(topic => {
+              let {name} = topic;
+              const name_position = $(`#${name}`).position().top;
+              if (top < name_position && name_position < bottom) {
+                $(`#${name}-nav-link`).hide();
               } else {
-                $(`#${heading}-nav-link`).show();
-                $(`#${heading}-nav-link`).text(`${heading} ${heading_position.top > bottom ? '↓' : '↑'}`);
+                $(`#${name}-nav-link`).text(`${name} ${name_position > bottom ? '↓' : '↑'}`).show();
               }
             });
           });
-
         TOPICS.forEach(topic => {
-            topic = topic.name;
+            let {name} = topic;
             $('.li').append(
-              $('<a>', {
-                class: `inline-block white center btn:hover`,
-                id: `${topic}-nav-link`,
-                href: `#${topic}`
-              }).text(topic)
+              $('<a class = "inline-block white center btn:hover">', {
+                id: `${name}-nav-link`,
+                href: `#${name}`
+              }).text(name)
             );
         });
 

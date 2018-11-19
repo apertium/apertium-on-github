@@ -14,7 +14,7 @@
           padding: 14px 16px;
       }
       .topic {
-          padding-top: 75px; 
+          padding-top: 75px;
           margin-top: -75px;
       }
       #content {
@@ -51,7 +51,6 @@
   </head>
   <body class="m2">
     <ul class="fixed m0 p0 overflow-hidden bg-black bottom-0 col-12 z2" id="navbar">
-      <li class="li left"></li>
     </ul>
     <div class="fixed top-0 col-12 py1 mr3 bg-white z1">
       <a href="https://apertium.org" target="_blank" rel="noopener" class="mt2 text-decoration-none nowrap"> <!-- apertium.org is slow and hosts a large version -->
@@ -71,7 +70,7 @@
       <div id="topics" class="flex flex-wrap col-12 mt1"></div>
     </div>
     <a class="fixed right-0 bottom-0 mr2 mb2 text-decoration-none h2" id="refresh" href="#">🔄</a>
-
+ 
     <script type="text/javascript" src="https://unpkg.com/zepto@1.2.0/dist/zepto.js" integrity="sha384-Cp3V2nlfJJ5aA0ctd1PkfNAEMkXM0EGa6RrmEgiv8D6TCaeZJfUFs/PYfR+B5F5H" crossorigin="anonymous"></script>
     <script type="text/javascript">
       const ORGANIZATION = 'apertium',
@@ -83,16 +82,16 @@
           name: topic,
           repoUrl: `https://github.com/${ORGANIZATION}/apertium-${topic}`,
         }));
-
+ 
       async function getReposByTopic(organization) {
         const headers = new Headers({ Accept: 'application/vnd.github.mercy-preview+json' });
         const cacheStale = !(CACHE_KEY in localStorage) || localStorage[EXPIRY_KEY] < Date.now();
-
+ 
         function _fetchRepos(page) {
           const url = `https://api.github.com/orgs/${ORGANIZATION}/repos?page=${page}&per_page=100`;
           return fetch(url, { headers });
         }
-
+ 
         let reposByTopic = {};
         function _addRepos(repos) {
           repos.forEach(repo => {
@@ -103,43 +102,43 @@
             });
           });
         }
-
+ 
         if (cacheStale) {
           console.warn('Repository list cache stale, updating.');
-
+ 
           const response = await _fetchRepos(1);
           _addRepos(await response.json());
           const linkHeader = response.headers.get('Link');
           const links = linkHeader ? linkHeader.split(',').map(x => x.split('; ')) : [];
           const lastPage = links.length ? parseInt(links.find(([_, rel]) => rel === 'rel="last"')[0].match(/page=(\d+)/)[1]) : 1;
-
+ 
           const remainingPages = [...Array(lastPage + 1).keys()].slice(2);
           const responses = await Promise.all(remainingPages.map(_fetchRepos));
           const reposs = await Promise.all(responses.map(response => response.json()));
           reposs.forEach(_addRepos);
-
+ 
           localStorage[CACHE_KEY] = JSON.stringify(reposByTopic);
           localStorage[EXPIRY_KEY] = Date.now() + EXPIRY_MILLIS;
         } else {
           reposByTopic = JSON.parse(localStorage[CACHE_KEY]);
         }
-
+ 
         return Promise.resolve(reposByTopic);
       }
-
+ 
       async function showTopics() {
         $('#topics, #loading').toggleClass('display-none');
-
+ 
         const reposByTopic = await getReposByTopic(ORGANIZATION);
         const normalizedSearchText = $('#search')
           .val()
           .toLowerCase();
-
+ 
         $('.topic').remove();
-
+ 
         TOPICS.forEach(({ topic, name, repoUrl }, i) => {
           const repoList = $('<ul class="repos list-reset mt0">');
-
+ 
           $('#topics').append(
             $('<div class="topic flex-auto">').append(
               $('<div>').append(
@@ -152,7 +151,7 @@
               repoList,
             ),
           );
-
+ 
           const repos = reposByTopic[topic] || [];
           repos
             .sort((a, b) => a.name.localeCompare(b.name))
@@ -177,7 +176,7 @@
               ),
             );
         });
-
+ 
         $('#topics, #loading').toggleClass('display-none');
       }
 
@@ -193,43 +192,43 @@
       }
 
       $(document).ready(() => {
-        $(window).on('scroll resize', function(){
-            const top = $(window).scrollTop();
-            const bottom = top + $(window).height();
-            TOPICS.forEach(topic => {
-              let {name} = topic;
-              const name_position = $(`#${name}`).position().top;
-              if (top < name_position && name_position < bottom) {
-                $(`#${name}-nav-link`).hide();
-              } else {
-                $(`#${name}-nav-link`).text(`${name} ${name_position > bottom ? '↓' : '↑'}`).show();
-              }
-            });
+        $(window).on('scroll resize', () => {
+          const top = $(window).scrollTop();
+          const bottom = top + $(window).height();
+          TOPICS.forEach(({name}) => {
+            const navLinkPosition = $(`#${name}`).position().top;
+            $(`#${name}-nav-link`)
+              .text(`${name} ${navLinkPosition > bottom ? '↓' : '↑'}`)
+              .toggle(top >= navLinkPosition || navLinkPosition >= bottom);
           });
-        TOPICS.forEach(topic => {
-            let {name} = topic;
-            $('.li').append(
+        });
+
+        TOPICS.map(({name}) => {
+          $('#navbar').append(
+            $('<li class = "left">').append(
               $('<a class = "inline-block white center btn:hover">', {
                 id: `${name}-nav-link`,
-                href: `#${name}`
+                href: `#${name}`,
+                class: `inline-block white center btn:hover`
               }).text(name)
-            );
+            )
+          );
         });
 
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
-        $('#refresh').click(({ currentTarget }) => {
+        $('#refresh').click(({currentTarget}) => {
           currentTarget.blur();
           refreshTopics();
         });
 
         $('#search').on('input', showTopics);
-        $(document.body).keypress(({ target, altKey, ctrlKey, metaKey, key }) => {
+        $(document.body).keypress(({target, altKey, ctrlKey, metaKey, key}) => {
           if (target === document.body && !altKey && !ctrlKey && !metaKey) {
             showSearchInput();
           }
         });
         $(window).keydown(event => {
-          const { keyCode, ctrlKey, metaKey } = event;
+          const {keyCode, ctrlKey, metaKey} = event;
           if (keyCode === 114 || ((ctrlKey || metaKey) && keyCode === 70)) {
             event.preventDefault();
             showSearchInput();

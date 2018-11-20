@@ -50,7 +50,7 @@
     </style>
   </head>
   <body class="m2">
-    <ul class="fixed m0 p0 overflow-hidden bg-black bottom-0 col-12 z2" id="navbar">
+    <ul id="navbar" class="fixed m0 p0 overflow-hidden bg-black bottom-0 col-12 z2">
     </ul>
     <div class="fixed top-0 col-12 py1 mr3 bg-white z1">
       <a href="https://apertium.org" target="_blank" rel="noopener" class="mt2 text-decoration-none nowrap"> <!-- apertium.org is slow and hosts a large version -->
@@ -195,7 +195,7 @@
         $(window).on('scroll resize', () => {
           const top = $(window).scrollTop();
           const bottom = top + $(window).height();
-          TOPICS.forEach(({name}) => {
+          TOPICS.forEach(({ name }) => {
             const navLinkPosition = $(`#${name}`).position().top;
             $(`#${name}-nav-link`)
               .text(`${name} ${navLinkPosition > bottom ? '↓' : '↑'}`)
@@ -203,32 +203,31 @@
           });
         });
 
-        TOPICS.map(({name}) => {
+        TOPICS.map(({ name }) => {
           $('#navbar').append(
-            $('<li class = "left">').append(
-              $('<a class = "inline-block white center btn:hover">', {
+            $('<li class="left">').append(
+              $('<a class="inline-block white center btn:hover">', {
                 id: `${name}-nav-link`,
                 href: `#${name}`,
-                class: `inline-block white center btn:hover`
               }).text(name)
             )
           );
         });
 
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
-        $('#refresh').click(({currentTarget}) => {
+        $('#refresh').click(({ currentTarget }) => {
           currentTarget.blur();
           refreshTopics();
         });
 
         $('#search').on('input', showTopics);
-        $(document.body).keypress(({target, altKey, ctrlKey, metaKey, key}) => {
+        $(document.body).keypress(({ target, altKey, ctrlKey, metaKey, key }) => {
           if (target === document.body && !altKey && !ctrlKey && !metaKey) {
             showSearchInput();
           }
         });
         $(window).keydown(event => {
-          const {keyCode, ctrlKey, metaKey} = event;
+          const { keyCode, ctrlKey, metaKey } = event;
           if (keyCode === 114 || ((ctrlKey || metaKey) && keyCode === 70)) {
             event.preventDefault();
             showSearchInput();

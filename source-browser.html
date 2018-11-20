@@ -203,16 +203,15 @@
           });
         });
 
-        TOPICS.map(({ name }) => {
-          $('#navbar').append(
-            $('<li class="left">').append(
-              $('<a class="inline-block white center btn:hover">', {
-                id: `${name}-nav-link`,
-                href: `#${name}`,
-              }).text(name)
-            )
-          );
-        });
+        $('#navbar').append(TOPICS.map(({name}) => 
+          $('<li class="left">').append(
+			$('<a class="inline-block white center btn:hover">', {
+			  id: `${name}-nav-link`,
+			   href: `#${name}`,
+			}).text(name)
+			),
+		  ),
+		);
 
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
         $('#refresh').click(({ currentTarget }) => {

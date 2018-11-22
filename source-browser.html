@@ -199,7 +199,7 @@
           TOPICS.forEach(({ name }) => {
             const navLinkPosition = $(`#${name}`).position().top;
             $(`#${name}-nav-link`).text(`${name} ${navLinkPosition > bottom ? '↓' : '↑'}`);
-		        $(`#${name}-nav-list`).toggle(top >= navLinkPosition || navLinkPosition >= bottom);		
+            $(`#${name}-nav-list`).toggle(top >= navLinkPosition || navLinkPosition >= bottom);		
           });
         });
 

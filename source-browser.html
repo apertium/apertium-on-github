@@ -145,8 +145,8 @@
           $('#topics').append(
             $('<div class="topic flex-auto">').append(
               $('<div>').append(
-                $('<h2 class="inline-block m0 relative heading">', {id: name}),
-                $('<h2 class="inline-block m0">').text(name),
+                $('<h2 class="inline-block m0 relative heading">', {id: `${name}-space`}),
+                $('<h2 class="inline-block m0">', {id: name}).text(name),
                 $('<a class="ml1 text-decoration-none" target="_blank" rel="noopener">🔗</a>', {
                   href: repoUrl,
                 }),
@@ -213,7 +213,7 @@
             $('<li class="left">', {id: `${name}-nav-list`}).append(
               $('<a class="inline-block white center btn:hover">', {
                 id: `${name}-nav-link`,
-                href: `#${name}`
+                href: `#${name}-space`
               }).text(name)
             )
           )

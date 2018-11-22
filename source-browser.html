@@ -11,14 +11,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hint.css/2.5.0/hint.base.min.css" integrity="sha256-ODFgZG+Y3V10lzZu+7J8epM4SdW0w3p8qbVmmShNrtk=" crossorigin="anonymous">
     <style type="text/css">
       #navbar li a {
-          padding: 14px 16px;
+        padding: 14px 16px;
       }
-      .heading {
-          padding-top: 75px;
-          margin-top: -75px;
-      }
+	  .heading {
+        line-height: 0;
+        display: block;
+        top: -90px;
+        visibility: hidden;
+	  }
       #content {
-		margin: 1rem;
+        margin: 1rem;
         margin-top: 75px;
         margin-bottom: 100px;
         overflow-x: hidden;
@@ -143,7 +145,8 @@
           $('#topics').append(
             $('<div class="topic flex-auto">').append(
               $('<div>').append(
-                $('<h2 class="inline-block m0 heading">', {id: name}).text(name),
+                $('<h2 class="inline-block m0 relative heading">', {id: name}),
+                $('<h2 class="inline-block m0">').text(name),
                 $('<a class="ml1 text-decoration-none" target="_blank" rel="noopener">🔗</a>', {
                   href: repoUrl,
                 }),

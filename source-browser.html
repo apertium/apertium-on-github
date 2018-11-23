@@ -13,12 +13,18 @@
       #navbar li a {
         padding: 14px 16px;
       }
+			
       .topic-heading {
         line-height: 0;
         display: block;
         top: -90px;
         visibility: hidden;
-	  }
+      }
+			
+			#navbar {
+        background-color:#2e2e2e;
+        list-style: none;
+			}
       #content {
         margin: 75px 1rem 100px;
         overflow-x: hidden;
@@ -69,7 +75,7 @@
       <h1 id="loading" class="m1 center display-none">⌛</h1>
       <div id="topics" class="flex flex-wrap col-12 mt1"></div>
     </div>
-    <a class="fixed right-0 bottom-0 mr2 mb2 text-decoration-none h2 z3" id="refresh" href="#">🔄</a>
+    <a class="fixed right-0 bottom-0 mr2 mb4 text-decoration-none h2 z3" id="refresh" href="#">🔄</a>
 
     <script type="text/javascript" src="https://unpkg.com/zepto@1.2.0/dist/zepto.js" integrity="sha384-Cp3V2nlfJJ5aA0ctd1PkfNAEMkXM0EGa6RrmEgiv8D6TCaeZJfUFs/PYfR+B5F5H" crossorigin="anonymous"></script>
     <script type="text/javascript">
@@ -192,7 +198,20 @@
           .focus();
       }
 
-      $(document).ready(() => {
+      function drawNavbar() {
+        $('#navbar').append(
+          TOPICS.map(({ name }) =>
+            $('<li class="left">', {id: `${name}-nav-list`}).append(
+              $('<a class="inline-block white center btn:hover btn">', {
+                id: `${name}-nav-link`,
+                href: `#${name}-space`
+              }).text(name)
+            )
+          )
+        );	
+      }
+
+      function updateNavbarVisibility() {
         $(window).on('scroll resize load', () => {
           const top = $(window).scrollTop();
           const bottom = top + $(window).height();
@@ -202,18 +221,11 @@
             $(`#${name}-nav-list`).toggle(top >= navLinkPosition || navLinkPosition >= bottom);		
           });
         });
+      }
 
-        $('#navbar').append(
-          TOPICS.map(({ name }) =>
-            $('<li class="left">', {id: `${name}-nav-list`}).append(
-              $('<a class="inline-block white center btn:hover">', {
-                id: `${name}-nav-link`,
-                href: `#${name}-space`
-              }).text(name)
-            )
-          )
-        );
-
+      $(document).ready(() => {
+        updateNavbarVisibility();
+        drawNavbar();
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
         $('#refresh').click(({ currentTarget }) => {
           currentTarget.blur();

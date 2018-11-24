@@ -226,12 +226,11 @@
           $(`#${name}-nav-link`).text(`${name} ${navLinkPosition > bottom ? '↓' : '↑'}`);
           $(`#${name}-nav-list`).toggle(top >= navLinkPosition || navLinkPosition >= bottom);		
         });
-      };
-      
+      }
 
       $(document).ready(() => {
-        $(window).on('scroll resize load', updateNavbarVisibility);
         drawNavbar();
+        $(window).on('scroll resize load', updateNavbarVisibility);
 
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
         $('#refresh').click(({ currentTarget }) => {

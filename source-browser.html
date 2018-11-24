@@ -219,19 +219,18 @@
       }
 
       function updateNavbarVisibility() {
-        $(window).on('scroll resize load', () => {
-          const top = $(window).scrollTop();
-          const bottom = top + $(window).height();
-          TOPICS.forEach(({ name }) => {
-            const navLinkPosition = $(`#${name}`).position().top;
-            $(`#${name}-nav-link`).text(`${name} ${navLinkPosition > bottom ? '↓' : '↑'}`);
-            $(`#${name}-nav-list`).toggle(top >= navLinkPosition || navLinkPosition >= bottom);		
-          });
+        const top = $(window).scrollTop();
+        const bottom = top + $(window).height();
+        TOPICS.forEach(({ name }) => {
+          const navLinkPosition = $(`#${name}`).position().top;
+          $(`#${name}-nav-link`).text(`${name} ${navLinkPosition > bottom ? '↓' : '↑'}`);
+          $(`#${name}-nav-list`).toggle(top >= navLinkPosition || navLinkPosition >= bottom);		
         });
-      }
+      };
+      
 
       $(document).ready(() => {
-        updateNavbarVisibility();
+        $(window).on('scroll resize load', updateNavbarVisibility);
         drawNavbar();
 
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);

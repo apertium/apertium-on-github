@@ -233,6 +233,7 @@
       $(document).ready(() => {
         updateNavbarVisibility();
         drawNavbar();
+
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
         $('#refresh').click(({ currentTarget }) => {
           currentTarget.blur();

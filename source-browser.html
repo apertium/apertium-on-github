@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -39,6 +40,17 @@
         max-width: 200px;
         width: max-content;
       }
+      .sticky {
+        width: 100%;
+        background-color: white;
+        z-index: 1;
+    }
+
+.sticky.stick {
+  position: fixed;
+  top: 80px;
+  z-index: 10000;
+}
     </style>
   </head>
   <body class="m2">
@@ -131,13 +143,14 @@
 
           $('#topics').append(
             $('<div class="topic flex-auto">').append(
-              $('<div>').append(
+                $('<div id="sticky-anchor">'),
+              $('<div class="sticky">').append(
                 $('<h2 class="inline-block m0">').text(name),
                 $('<a class="ml1 text-decoration-none" target="_blank" rel="noopener">🔗</a>', {
                   href: repoUrl,
                 }),
-              ),
               $('<hr class="mr0 ml0 col-10">'),
+              ),
               repoList,
             ),
           );
@@ -180,7 +193,7 @@
           .removeClass('display-none')
           .focus();
       }
-
+  
       $(document).ready(() => {
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
         $('#refresh').click(({ currentTarget }) => {
@@ -204,6 +217,20 @@
 
         setInterval(refreshTopics, EXPIRY_MILLIS * 2);
         showTopics();
+        function sticky_relocate() {
+            var window_top = $(window).scrollTop();
+            var div_top = $('#sticky-anchor').offset().top;
+            if (window_top + 76 > div_top) {
+                $('.sticky').addClass('stick');
+            } else {
+                $('.sticky').removeClass('stick');
+            }
+        }
+
+$(function() {
+  $(window).scroll(sticky_relocate);
+  sticky_relocate();
+});
       });
     </script>
   </body>

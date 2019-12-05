@@ -67,7 +67,6 @@
             position: fixed;
         }
 
-        /* Style the buttons inside the tab */
         .tab button {
             display: block;
             background-color: inherit;
@@ -82,22 +81,18 @@
             font-size: 17px;
         }
 
-        /* Change background color of buttons on hover */
         .tab button:hover {
             background-color: #ddd;
         }
 
-        /* Create an active/current "tab button" class */
         .tab button.active {
             background-color: #ccc;
         }
 
-        /* Style the tab content */
         .tabcontent {
             float: left;
             padding-top: 15px;
             padding-left: 35%;
-            border: 1px solid #ccc;
             width: 100%;
             border-left: none;
             height: 100%;
@@ -128,7 +123,13 @@
 
         <div id="topics" class="flex flex-wrap col-12 mt1">
             <div class="tab">
-            </div>
+                <button id="tabs0" class="tablinks active"
+                    onclick="openTopic(event, 'languages')">languages</button><button id="tabs1" class="tablinks"
+                    onclick="openTopic(event, 'trunk')">trunk</button><button id="tabs2" class="tablinks"
+                    onclick="openTopic(event, 'staging')">staging</button><button id="tabs3" class="tablinks"
+                    onclick="openTopic(event, 'nursery')">nursery</button><button id="tabs4" class="tablinks"
+                    onclick="openTopic(event, 'incubator')">incubator</button><button id="tabs5" class="tablinks"
+                    onclick="openTopic(event, 'tools')">tools</button></div>
         </div>
     </div>
     <a class="fixed right-0 bottom-0 mr2 mb2 text-decoration-none h2" id="refresh" href="#">🔄</a>
@@ -203,21 +204,18 @@
             $('.topic').remove();
             TOPICS.forEach(({ topic, name, repoUrl }, i) => {
                 const repoList = $('<ul class="repos list-reset mt0">');
-                $('.tab').append(
-                    $('<button id="tabs' + i + '" class="tablinks" onclick="openTopic(event, \'' + name + '\')">').text(name),
-                ),
-                    $('#topics').append(
-                        $('<div id="' + name + '" class="topic tabcontent">').append(
-                            $('<div>').append(
-                                $('<h2 class="inline-block m0">').text(name),
-                                $('<a class="ml1 text-decoration-none" target="_blank" rel="noopener">🔗</a>', {
-                                    href: repoUrl,
-                                }),
-                            ),
-                            $('<hr class="mr0 ml0 col-10">'),
-                            repoList,
+                $('#topics').append(
+                    $('<div id="' + name + '" class="topic tabcontent">').append(
+                        $('<div>').append(
+                            $('<h2 class="inline-block m0">').text(name),
+                            $('<a class="ml1 text-decoration-none" target="_blank" rel="noopener">🔗</a>', {
+                                href: repoUrl,
+                            }),
                         ),
-                    );
+                        $('<hr class="mr0 ml0 col-3">'),
+                        repoList,
+                    ),
+                );
                 const repos = reposByTopic[topic] || [];
                 repos
                     .sort((a, b) => a.name.localeCompare(b.name))

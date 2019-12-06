@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -84,28 +83,28 @@
       
     <script type="text/javascript">
     setInterval(function(){ 
-        $( ".stopic" ).each(function(index) {
-            if ($( this ).position().top <= 138) {
-                $( this ).addClass("sticky");
+        $('.stickTopic').each(function(index) {
+            if ($(this).position().top <= 138) {
+                $(this).addClass('sticky');
             }
             else {  
-                $( this ).removeClass("sticky");
+                $(this).removeClass('sticky');
             }
         });
      }, 100);
      setInterval(function(){ 
-        $( ".repos" ).each(function(index) {
-            var h = $( window ).height() + 10;
-            if ($( this ).position().top < 140) {
-                $( this ).prev().addClass("sticky");
+        $('.repos').each(function(index) {
+            var h = $(window).height() + 10;
+            if ($(this).position().top < 140) {
+                $(this).prev().addClass('sticky');
             }
             else if ($( this ).position().top > h) {
-                $( this ).prev().addClass("stickyb");
+                $(this).prev().addClass('stickyb');
             }
             else {  
-                $( this ).prev().removeClass("sticky");
+                $( this ).prev().removeClass('sticky');
                 
-                $( this ).prev().removeClass("stickyb");
+                $( this ).prev().removeClass('stickyb');
             }
         });
      }, 1);
@@ -181,7 +180,7 @@ async function showTopics() {
 
     $('#topics').append(
       $('<div class="topic flex-auto">').append(
-        $('<div class="stopic">').append(
+        $('<div class="stickTopic">').append(
           $('<h2 class="inline-block m0">').text(name),
           $('<a class="ml1 text-decoration-none" target="_blank" rel="noopener">🔗</a>', {
             href: repoUrl,

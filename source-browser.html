@@ -53,6 +53,7 @@
         z-index: 100;
         background-color: rgb(235, 235, 235);
         opacity: 0.75;
+        height: fit-content;
         width: 20%;
       }
       #refresh {
@@ -95,19 +96,24 @@
                     $(this).removeClass('sticky');
                 }
             });
+         }, 50);
+         setInterval(function(){ 
+            $('.repos').each(function(index) {
+                if ($(this).position().top < 140) {
+                    $(this).prev().addClass('sticky');
+                }
+                else {  
+                    $(this).prev().removeClass('sticky');
+                }
+            });
          }, 10);
          setInterval(function(){ 
             $('.repos').each(function(index) {
                 var h = $(window).height() + 10;
-                if ($(this).position().top < 140) {
-                    $(this).prev().addClass('sticky');
-                }
-                else if ($(this).position().top > h) {
+                if ($(this).position().top > h) {
                     $(this).prev().addClass('stickyb');
                 }
                 else {  
-                    $(this).prev().removeClass('sticky');
-                    
                     $(this).prev().removeClass('stickyb');
                 }
             });
@@ -176,7 +182,7 @@
                 $('<a class="ml1 text-decoration-none" target="_blank" rel="noopener">🔗</a>', {
                   href: repoUrl,
                 }),
-              $('<hr class="mr0 ml0 col-4">'),
+              $('<hr class="mr0 ml0 col-3">'),
               ),
               repoList,
             ),

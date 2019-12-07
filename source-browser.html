@@ -12,7 +12,6 @@
     <style type="text/css">
     #content {
         margin-top: 75px;
-        height: 80vh;
         overflow-x: hidden;
     }
       #logo-text {
@@ -49,17 +48,18 @@
         width:  100%;
     }
     .stickyb {
-        border-top: 1px solid rgb(184, 184, 184);
+        border-top: 0.02em solid rgb(216, 216, 216);
         position: fixed;
-        bottom: 0;
+        bottom: -8px;
         z-index: 100;
         background-color: white;
         height: fit-content;
-        width: 90%;
+        min-width: fit-content;
     }
     #refresh {
         z-index: 1000;
         right: 20px;
+        bottom: 30px;
     }
     #navbar {
         z-index: 1000;
@@ -89,19 +89,41 @@
     <script type="text/javascript" src="https://unpkg.com/zepto@1.2.0/dist/zepto.js" integrity="sha384-Cp3V2nlfJJ5aA0ctd1PkfNAEMkXM0EGa6RrmEgiv8D6TCaeZJfUFs/PYfR+B5F5H" crossorigin="anonymous"></script>
     <script type="text/javascript">
       setInterval(function(){ 
-          $('#content').height($(window).height() - $('#navbar').height() - $('.stickTopic').height() - 20);
+          $('#content').height($(window).height() - $('#navbar').height() - $('.stickTopic').height() - 40);
           $('.repos').each(function(index) {
-              var h = $(window).height();
-              if ($(this).position().top > h) {
-                  $(this).prev().removeClass('sticky');
+              var h = $(window).height() - $('.stickTopic').height() - 8;
+              if ($(this).position().top >= h) {
                   $(this).prev().addClass('stickyb');
               }
-              else {  
-                  $(this).prev().addClass('sticky');
+              else if ($(this).position().top <= h) {  
                   $(this).prev().removeClass('stickyb');
+                  $(this).prev().css('width', '100%')
               }
           }); 
-      }, 10);
+      }, 1);
+      setInterval(function(){
+        $('.repos').each(function(index) {
+              var h = $(window).height() - $('.stickTopic').height() - 8;
+              if ($(this).position().top >= h) {
+                  $(this).prev().removeClass('sticky');
+              }
+              else if ($(this).position().top <= h) {  
+                  $(this).prev().addClass('sticky');
+                  $(this).prev().css('width', '100%')
+              }
+          }); 
+          if ($('.stickyb').length == 1) {
+            $('.stickyb').css('width', '95.5%');
+          }
+          else if ($('.stickyb').length == 2) {
+            $('.stickyb').css('width', '47.5%')
+          }
+          else if($('.stickyb').length == 3) {
+            $('.stickyb').css('width', '32%')
+          } else {
+            $('.stickyb').css('width', '100%')
+          }
+      }, 300);
       </script>
     <script type="text/javascript">
       const ORGANIZATION = 'apertium',
@@ -156,7 +178,7 @@
           .toLowerCase();
         $('.topic').remove();
         TOPICS.forEach(({ topic, name, repoUrl }, i) => {
-          const repoList = $('<ul class="repos list-reset mt0">');
+          const repoList = $('<ul id="'+ name +'" class="repos list-reset mt0">');
           $('#topics').append(
             $('<div class="topic flex-auto">').append(
               $('<div class="sticky">').append(

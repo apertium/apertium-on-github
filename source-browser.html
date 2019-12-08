@@ -64,6 +64,9 @@
     #navbar {
         z-index: 1000;
     }
+    .repos{
+        position:relative;
+    }
     </style>
   </head>
   <body class="m2">
@@ -88,40 +91,47 @@
 
     <script type="text/javascript" src="https://unpkg.com/zepto@1.2.0/dist/zepto.js" integrity="sha384-Cp3V2nlfJJ5aA0ctd1PkfNAEMkXM0EGa6RrmEgiv8D6TCaeZJfUFs/PYfR+B5F5H" crossorigin="anonymous"></script>
     <script type="text/javascript">
-      setInterval(function() {
-        $("#content").height(
-          $(window).height() - $("#navbar").height() - $(".stickTopic").height() - 40
-        );
-        $(".repos").each(function(index) {
-          if ($(this).position().top >= $(window).height() - $(".stickTopic").height() - 8) {
-            $(this)
-              .prev()
-              .addClass("stickyb");
-            $(this)
-              .prev()
-              .removeClass("sticky");
-          } else {
-            $(this)
-              .prev()
-              .removeClass("stickyb");
-            $(this)
-              .prev()
-              .addClass("sticky");
-            $(this)
-              .prev()
-              .css("width", "100%");
-          }
-        });
-        if ($(".stickyb").length == 1) {
-          $(".stickyb").css("width", "95.5%");
-        } else if ($(".stickyb").length == 2) {
-          $(".stickyb").css("width", "47.5%");
-        } else if ($(".stickyb").length == 3) {
-          $(".stickyb").css("width", "32%");
-        } else {
-          $(".stickyb").css("width", "100%");
-        }
-      }, 1);
+ setInterval(function() {
+  $("#content").height(
+    $(window).height() - $("#navbar").height() - $(".stickTopic").height() - 40
+  );
+  $(".repos").each(function(index) {
+    if (
+      $(this).position().top >=
+      $(window).height() - $(".stickTopic").height() - 20
+    ) {
+      $(this).css("top", "14px");
+      $(this)
+        .prev()
+        .addClass("stickyb");
+      $(this)
+        .prev()
+        .removeClass("sticky");
+    } else {
+      $(this).css("top", "0px");
+      $(this)
+        .prev()
+        .removeClass("stickyb");
+      $(this)
+        .prev()
+        .addClass("sticky");
+      $(this)
+        .prev()
+        .css("width", "100%");
+    }
+  });
+
+  if ($(".stickyb").length == 1) {
+    $(".stickyb").css("width", "95.5%");
+  } else if ($(".stickyb").length == 2) {
+    $(".stickyb").css("width", "47.5%");
+  } else if ($(".stickyb").length == 3) {
+    $(".stickyb").css("width", "32%");
+  } else {
+    $(".stickyb").css("width", "100%");
+  }
+}, 1);
+
       </script>
     <script type="text/javascript">
       const ORGANIZATION = 'apertium',

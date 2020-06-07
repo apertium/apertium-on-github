@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="https://unpkg.com/basscss@7.1.1/css/basscss.min.css" integrity="sha384-/biuPsPEkt10QoeOExIADuWNrpFFXALKPgBhEDkRdKDJdQOPpbNU3uUeFbL/KPJg" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hint.css/2.5.0/hint.base.min.css" integrity="sha256-ODFgZG+Y3V10lzZu+7J8epM4SdW0w3p8qbVmmShNrtk=" crossorigin="anonymous">
     <style type="text/css">
-    #content {
-        margin-top: 75px;
-        overflow-x: hidden;
-    }
+      #content {
+          margin-top: 75px;
+          overflow-x: hidden;
+      }
       #logo-text {
         color: #808080;
         font-family: 'DejaVu Sans', 'DejaVu Sans Fallback', 'Arial #000', Arial;
@@ -39,34 +39,31 @@
         max-width: 200px;
         width: max-content;
       }
-    .sticky {
-        position: -webkit-sticky;
-        position: sticky;
-        top: 5px;
-        z-index: 100;
-        background-color: white;
-        width:  100%;
-    }
-    .stickyb {
-        border-top: 0.02em solid rgb(216, 216, 216);
-        position: fixed;
-        bottom: -8px;
-        z-index: 100;
-        background-color: white;
-        height: fit-content;
-        min-width: fit-content;
-    }
-    #refresh {
-        z-index: 1000;
-        right: 20px;
-        bottom: 30px;
-    }
-    #navbar {
-        z-index: 1000;
-    }
-    .repos{
-        position:relative;
-    }
+      .sticky {
+          position: -webkit-sticky;
+          position: sticky;
+          top: 5px;
+          z-index: 100;
+          background-color: white;
+          width:  100%;
+      }
+      .sticky-bottom {
+          border-top: 0.02em solid rgb(216, 216, 216);
+          position: fixed;
+          bottom: -8px;
+          z-index: 100;
+          background-color: white;
+          height: fit-content;
+          min-width: fit-content;
+      }
+      #refresh {
+          z-index: 1000;
+          right: 20px;
+          bottom: 30px;
+      }
+      #navbar {
+          z-index: 1000;
+      }
     </style>
   </head>
   <body class="m2">
@@ -90,49 +87,6 @@
     <a class="fixed right-0 bottom-0 mr2 mb2 text-decoration-none h2" id="refresh" href="#">🔄</a>
 
     <script type="text/javascript" src="https://unpkg.com/zepto@1.2.0/dist/zepto.js" integrity="sha384-Cp3V2nlfJJ5aA0ctd1PkfNAEMkXM0EGa6RrmEgiv8D6TCaeZJfUFs/PYfR+B5F5H" crossorigin="anonymous"></script>
-    <script type="text/javascript">
- setInterval(function() {
-  $("#content").height(
-    $(window).height() - $("#navbar").height() - $(".stickTopic").height() - 40
-  );
-  $(".repos").each(function(index) {
-    if (
-      $(this).position().top >=
-      $(window).height() - $(".stickTopic").height() - 20
-    ) {
-      $(this).css("top", "14px");
-      $(this)
-        .prev()
-        .addClass("stickyb");
-      $(this)
-        .prev()
-        .removeClass("sticky");
-    } else {
-      $(this).css("top", "0px");
-      $(this)
-        .prev()
-        .removeClass("stickyb");
-      $(this)
-        .prev()
-        .addClass("sticky");
-      $(this)
-        .prev()
-        .css("width", "100%");
-    }
-  });
-
-  if ($(".stickyb").length == 1) {
-    $(".stickyb").css("width", "95.5%");
-  } else if ($(".stickyb").length == 2) {
-    $(".stickyb").css("width", "47.5%");
-  } else if ($(".stickyb").length == 3) {
-    $(".stickyb").css("width", "32%");
-  } else {
-    $(".stickyb").css("width", "100%");
-  }
-}, 1);
-
-      </script>
     <script type="text/javascript">
       const ORGANIZATION = 'apertium',
         CACHE_KEY = `${ORGANIZATION}-cache`,
@@ -198,7 +152,7 @@
         $('.topic').remove();
 
         TOPICS.forEach(({ topic, name, repoUrl }, i) => {
-          const repoList = $('<ul class="repos list-reset mt0">');
+          const repoList = $('<ul class="repos list-reset mt0 relative">');
 
           $('#topics').append(
             $('<div class="topic flex-auto">').append(
@@ -252,6 +206,23 @@
           .focus();
       }
 
+      function refreshLayout() {
+        $("#content").height($(window).height() - $("#navbar").height() - 40);
+
+        $(".repos").each(function (index) {
+          if ($(this).position().top >= $(window).height() - 20) {
+            $(this).css("top", "14px");
+            $(this).prev().addClass("sticky-bottom").removeClass("sticky");
+          } else {
+            $(this).css("top", "0px");
+            $(this).prev().removeClass("sticky-bottom").addClass("sticky").css("width", "100%");
+          }
+        });
+
+        const stickyWidthMap = { 1: "95.5", 2: "47.5", 3: "32" };
+        $(".sticky-bottom").css("width", `${stickyWidthMap[$(".sticky-bottom").length] || 100}%`);
+      }
+
       $(document).ready(() => {
         $('#github-link').attr('href', `https://github.com/${ORGANIZATION}`);
         $('#refresh').click(({ currentTarget }) => {
@@ -274,6 +245,7 @@
         });
 
         setInterval(refreshTopics, EXPIRY_MILLIS * 2);
+        setInterval(refreshLayout, 1);
         showTopics();
       });
     </script>

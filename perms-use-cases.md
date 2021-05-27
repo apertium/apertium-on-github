@@ -142,7 +142,7 @@ that repository, and any organization member of `apertium` can use
 organization-level project boards.
 
   [1]: https://github.com/sushain97/apertium-on-github#organization
-  [2]: http://wiki.apertium.org/wiki/By-laws
+  [2]: https://wiki.apertium.org/wiki/By-laws
   [3]: https://help.github.com/articles/about-teams/
   [4]: https://help.github.com/articles/about-project-boards/
   [5]: https://help.github.com/articles/about-releases/

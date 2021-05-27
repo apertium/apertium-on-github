@@ -4,7 +4,7 @@
 
 ## Proposal
 
-See [PMC_proposals/Move_Apertium_to_Github](http://wiki.apertium.org/wiki/PMC_proposals/Move_Apertium_to_Github).
+See [PMC_proposals/Move_Apertium_to_Github](https://wiki.apertium.org/wiki/PMC_proposals/Move_Apertium_to_Github).
 
 ## Structure
 
